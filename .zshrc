@@ -120,3 +120,8 @@ if [ -e "$HOME/code/go/src/github.com/stackrox/workflow/env.sh" ]; then
 fi
 
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
+
+if [ -d "$HOME/ext/nvim-osx64" ]; then
+    export PATH="$PATH:$HOME/ext/nvim-osx64/bin"
+fi
+
