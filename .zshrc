@@ -109,7 +109,9 @@ export PATH="$PATH:$HOME/code/go/bin"
 if [ -f '/Users/ghutton/ext/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/ghutton/ext/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/ghutton/ext/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/ghutton/ext/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f "$HOME/ext/google-cloud-sdk/completion.zsh.inc" ]; then 
+    . "$HOME/ext/google-cloud-sdk/completion.zsh.inc"
+fi
 
 if [ -e "$HOME/.infra" ]; then
     . "$HOME/.infra"
@@ -125,3 +127,6 @@ if [ -d "$HOME/ext/nvim-osx64" ]; then
     export PATH="$PATH:$HOME/ext/nvim-osx64/bin"
 fi
 
+if [ -f "$HOME/.aliases" ]; then
+    source "$HOME/.aliases"
+fi
