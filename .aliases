@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function _echo_and_run() (
     echo "[*]" $@
     eval $@
@@ -24,3 +26,5 @@ then
 else
     echo "[*] gcloud not installed"
 fi
+
+alias vim="nvim"
