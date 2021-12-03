@@ -1,9 +1,9 @@
 #!/bin/bash
 
-function _echo_and_run() (
+function _echo_and_run() {
     echo "[*]" $@
     eval $@
-)
+}
 
 if [ -x "$(command -v gcloud)" ];
 then
@@ -28,3 +28,16 @@ else
 fi
 
 alias vim="nvim"
+
+function cdgo() {
+    if [[ -z "${GOPATH}" ]]; then
+        echo "[*] no GOPATH set"
+        exit 1
+    fi
+
+    _echo_and_run cd "${GOPATH}/src/${1}"
+}
+
+function cdsrox() {
+    _echo_and_run cdgo "github.com/stackrox/${1}"
+}
