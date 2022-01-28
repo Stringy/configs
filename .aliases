@@ -41,3 +41,18 @@ function cdgo() {
 function cdsrox() {
     _echo_and_run cdgo "github.com/stackrox/${1}"
 }
+
+function gcsource() {
+    local name="$1"
+    local config_file="$HOME/.gcloud-config/${name}"
+    if [[ ! -e "${config_file}" ]]; then
+        echo "[*] no gcloud config for ${name}"
+        echo "[*] ${config_file} does not exist"
+        return 1;
+    fi
+    _echo_and_run source "$HOME/.gcloud-config/${name}"
+}
+
+function gcreset() {
+    gcsource reset
+}

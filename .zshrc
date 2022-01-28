@@ -131,3 +131,10 @@ if [ -f "$HOME/.aliases" ]; then
     source "$HOME/.aliases"
 fi
 
+if [ -d "$HOME/scripts" ]; then
+    export PATH="$PATH:$HOME/scripts"
+fi
+
+if [ -d "$HOME/homebrew/opt/binutils" ]; then
+    export PATH="$PATH:$HOME/homebrew/opt/binutils/bin"
+fi
