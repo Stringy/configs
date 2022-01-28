@@ -1,0 +1,73 @@
+# encoding utf-8
+# -*- mode python -*-
+# vi: set ft=python :
+
+import json
+
+# XONSH WEBCONFIG START
+$PROMPT = '[{localtime}] {YELLOW}{env_name} {BOLD_BLUE}{user}@{hostname} {BOLD_GREEN}{cwd} {branch_color}{curr_branch} {gitstatus}{RESET}\n$ '
+# XONSH WEBCONFIG END
+
+$GOPATH=f'{$HOME}/code/go'
+$PATH += [
+    $HOME + '/homebrew/bin',
+    $HOME + '/code/go/bin'
+]
+
+aliases['config'] = ["/usr/bin/git", f"--git-dir={$HOME}/.cfg/", f"--work-tree={$HOME}"]
+aliases['vim'] = ['nvim']
+
+def _echo_and_run(*args):
+    print("[*]", " ".join(args))
+    @(args)
+
+
+def cdgo(project=None):
+    if "GOPATH" not in ${...}:
+        print("[*] no GOPATH set")
+        exit(1)
+    
+    path = f"{$GOPATH[0]}/src/{project or ''}"
+    _echo_and_run("cd", path)
+
+def cdsrox(project=None):
+    cdgo(project=f"stackrox/{project or ''}")
+
+def gcsource(machine):
+    config_file = f"{$HOME}/.gcloud-config.json"
+    with open(config_file) as conf:
+        config = json.load(conf)
+
+    try:
+        remote = config[machine]
+    except KeyError:
+        print(f"[*] invalid machine: {machine}")
+        return 1
+
+    $REMOTE_HOST_TYPE = remote['host_type']
+    $VM_TYPE = remote['vm_type']
+    $VM_CONFIG = remote['vm_config']
+
+    if remote['host_type'] == 'gcloud':
+        $GCLOUD_USER = remote['user']
+        $GCLOUD_INSTANCE = remote['instance']
+        $GCLOUD_OPTIONS = " ".join(remote['options'])
+    elif remote['host_type'] == 'ssh':
+        $SSH_USER = remote['user']
+        $SSH_ADDRESS = remote['address']
+        $SSH_KEY_PATH = remote['private_key']
+
+def gclist():
+    with open(f"{$HOME}/.gcloud-config.json") as c:
+        print("\n".join(json.load(c).keys()))
+
+def gcreset():
+    del $REMOTE_HOST_TYPE
+    del $VM_TYPE
+    del $VM_CONFIG
+    del $GCLOUD_USER
+    del $GCLOUD_INSTANCE
+    del $GCLOUD_OPTIONS
+    del $SSH_USER
+    del $SSH_ADDRESS
+    del $SSH_KEY_PATH
