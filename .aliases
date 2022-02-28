@@ -23,6 +23,10 @@ then
         shift;shift;shift;
         _echo_and_run gcloud compute scp $@ --project ${PROJECT} ${FROM} ${TO}
     )
+
+    if [[ -e "${HOME}/.ssh/google_compute_engine" ]]; then
+        _echo_and_run ssh-add "${HOME}/.ssh/google_compute_engine"
+    fi
 else
     echo "[*] gcloud not installed"
 fi
@@ -56,3 +60,19 @@ function gcsource() {
 function gcreset() {
     gcsource reset
 }
+
+if command -v vagrant &> /dev/null; then
+    echo "[*] installing vagrant aliases"
+    alias vup="vagrant up"
+    alias vdown="vagrant halt"
+
+    function vssh() {
+        local name="$1"
+        shift
+        (cd "${HOME}/vagrant/${name}" && vagrant ssh -- "$@" )
+    }
+
+    function vcd() {
+        cd "${HOME}/vagrant/${1}"
+    }
+fi

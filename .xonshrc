@@ -31,7 +31,7 @@ def cdgo(project=None):
     _echo_and_run("cd", path)
 
 def cdsrox(project=None):
-    cdgo(project=f"stackrox/{project or ''}")
+    cdgo(project=f"github.com/stackrox/{project or ''}")
 
 def gcsource(machine):
     config_file = f"{$HOME}/.gcloud-config.json"

@@ -138,3 +138,6 @@ fi
 if [ -d "$HOME/homebrew/opt/binutils" ]; then
     export PATH="$PATH:$HOME/homebrew/opt/binutils/bin"
 fi
+
+export PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
+export PATH="$PATH:$PYTHON_BIN_PATH"
