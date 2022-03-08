@@ -75,4 +75,12 @@ if command -v vagrant &> /dev/null; then
     function vcd() {
         cd "${HOME}/vagrant/${1}"
     }
+
+    function vagrant_complete() {
+        [[ -d "${HOME}/vagrant/" ]] || return
+        COMPREPLY=($(cd "${HOME}/vagrant/" && compgen -d))
+    }
+
+    complete -F vagrant_complete vssh
+    complete -F vagrant_complete vcd
 fi
