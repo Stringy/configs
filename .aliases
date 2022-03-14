@@ -5,6 +5,14 @@ function _echo_and_run() {
     eval $@
 }
 
+function _ssh_add_if_not_exists() {
+    if ssh-add -l | grep -q "$(ssh-keygen -lf "${1}" | awk '{print $2}')"; then
+        echo "[*] ${1} has already been added to the ssh agent"
+    else
+        _echo_and_run ssh-add "${1}"
+    fi
+}
+
 if [ -x "$(command -v gcloud)" ];
 then
     echo "[*] installing gcp functions"
@@ -25,7 +33,7 @@ then
     )
 
     if [[ -e "${HOME}/.ssh/google_compute_engine" ]]; then
-        _echo_and_run ssh-add "${HOME}/.ssh/google_compute_engine"
+        _ssh_add_if_not_exists "${HOME}/.ssh/google_compute_engine"
     fi
 else
     echo "[*] gcloud not installed"
@@ -76,6 +84,10 @@ if command -v vagrant &> /dev/null; then
         cd "${HOME}/vagrant/${1}"
     }
 
+    function vssh-add() {
+        _ssh_add_if_not_exists "${HOME}/vagrant/${1}/.vagrant/machines/default/virtualbox/private_key"
+    }
+
     function vagrant_complete() {
         [[ -d "${HOME}/vagrant/" ]] || return
         COMPREPLY=($(cd "${HOME}/vagrant/" && compgen -d))
@@ -83,4 +95,5 @@ if command -v vagrant &> /dev/null; then
 
     complete -F vagrant_complete vssh
     complete -F vagrant_complete vcd
+    complete -F vagrant_complete vssh-add
 fi
