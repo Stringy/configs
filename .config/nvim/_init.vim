@@ -1,8 +1,9 @@
 call plug#begin('~/.config/nvim/plugged')
-    Plug 'scrooloose/nerdtree'
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     Plug 'morhetz/gruvbox'
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
 set nocompatible            " disable compatibility to old-time vi
@@ -33,3 +34,6 @@ set noswapfile            " disable creating swap file
 colorscheme gruvbox
 
 set background=dark
+
+nnoremap <silent> <Leader><N> :NERDTreeToggle<CR>
+
