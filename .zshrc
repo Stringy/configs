@@ -141,3 +141,4 @@ fi
 
 export PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
 export PATH="$PATH:$PYTHON_BIN_PATH"
+export PATH="/Users/ghutton/homebrew/opt/llvm/bin:$PATH"

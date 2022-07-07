@@ -50,8 +50,8 @@ function cdgo() {
     _echo_and_run cd "${GOPATH}/src/${1}"
 }
 
-function cdsrox() {
-    _echo_and_run cdgo "github.com/stackrox/${1}"
+function cdc() {
+    _echo_and_run cd "${HOME}/code/collector-dev/"
 }
 
 function gcsource() {
@@ -64,6 +64,13 @@ function gcsource() {
     fi
     _echo_and_run source "$HOME/.gcloud-config/${name}"
 }
+
+function _gc_complete() {
+    [[ -d "${HOME}/.gcloud-config/" ]] || return
+    COMPREPLY=($(cd "${HOME}/.gcloud-config/" && compgen -f))
+}
+
+complete -F _gc_complete gcsource
 
 function gcreset() {
     gcsource reset
@@ -96,4 +103,23 @@ if command -v vagrant &> /dev/null; then
     complete -F vagrant_complete vssh
     complete -F vagrant_complete vcd
     complete -F vagrant_complete vssh-add
+fi
+
+if command -v kubectl &> /dev/null; then
+    echo "[*] installing kubectl aliases"
+    alias klogs="kubectl logs"
+    alias kpods="kubectl get pods"
+
+    function kpod_logs() {
+        local POD=$(kubectl get pods -n stackrox | grep ${1} | awk '{print $1}')
+        kubectl logs -n stackrox ${POD} ${1}
+    }
+
+    function kcollector_logs() {
+        kpod_logs collector
+    }
+
+    function ksensor_logs() {
+        kpod_logs sensor
+    }
 fi
