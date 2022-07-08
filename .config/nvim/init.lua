@@ -18,6 +18,10 @@ require('packer').startup(function(use)
   use 'neovim/nvim-lspconfig'
   use 'williamboman/nvim-lsp-installer'
   use { 'nvim-treesitter/nvim-treesitter', run=':TSUpdate' }
+  use 'LionC/nest.nvim'
+  use 'hrsh7th/nvim-cmp'
+  use 'hrsh7th/cmp-nvim-lsp'
+  use 'gauteh/vim-cppman'
 
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
@@ -26,6 +30,7 @@ require('packer').startup(function(use)
   end
 end)
 
+require('binds')
 require('options')
 require('nvim-lsp-installer').setup{}
 require('nvim-tree').setup()
@@ -69,7 +74,17 @@ local lsp_flags = {
   debounce_text_changes = 150,
 }
 
-require('lspconfig').clangd.setup{
-    on_attach=on_attach,
-    flags=lsp_flags
-}
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+
+local lspconfig = require('lspconfig')
+
+for _, lsp in ipairs({'ccls', 'gopls', 'cmake', 'pyright'}) do
+    lspconfig[lsp].setup {
+        on_attach=on_attach,
+        flags=lsp_flags,
+        capabilities=capabilities
+    }
+end
+
+require('plugins')
