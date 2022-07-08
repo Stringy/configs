@@ -131,3 +131,4 @@ if [ -f "$HOME/.aliases" ]; then
     source "$HOME/.aliases"
 fi
 
+export LIBRARY_PATH=:/opt/homebrew/lib
