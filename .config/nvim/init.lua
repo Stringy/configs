@@ -21,7 +21,15 @@ require('packer').startup(function(use)
   use 'LionC/nest.nvim'
   use 'hrsh7th/nvim-cmp'
   use 'hrsh7th/cmp-nvim-lsp'
+  use 'hrsh7th/cmp-buffer'
   use 'gauteh/vim-cppman'
+  use {
+      'nvim-telescope/telescope.nvim',
+      requires = {
+          { 'nvim-lua/plenary.nvim' }
+      }
+  }
+  use 'habamax/vim-godot'
 
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
@@ -79,7 +87,7 @@ capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 local lspconfig = require('lspconfig')
 
-for _, lsp in ipairs({'ccls', 'gopls', 'cmake', 'pyright'}) do
+for _, lsp in ipairs({'ccls', 'gopls', 'cmake', 'pyright', 'gdscript'}) do
     lspconfig[lsp].setup {
         on_attach=on_attach,
         flags=lsp_flags,
