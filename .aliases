@@ -123,3 +123,5 @@ if command -v kubectl &> /dev/null; then
         kpod_logs sensor
     }
 fi
+
+alias cdci="cd $HOME/code/stringy/openshift-release"
