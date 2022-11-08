@@ -107,11 +107,6 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-export GOPATH="$HOME/code/go"
-
-export PATH="$PATH:$HOME/homebrew/bin"
-export PATH="$PATH:$HOME/code/go/bin"
-
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/ghutton/ext/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/ghutton/ext/google-cloud-sdk/path.zsh.inc'; fi
 
@@ -120,36 +115,13 @@ if [ -f "$HOME/ext/google-cloud-sdk/completion.zsh.inc" ]; then
     . "$HOME/ext/google-cloud-sdk/completion.zsh.inc"
 fi
 
-if [ -e "$HOME/.infra" ]; then
-    . "$HOME/.infra"
-fi
-
-if [ -e "$HOME/code/go/src/github.com/stackrox/workflow/env.sh" ]; then
-    source "$HOME/code/go/src/github.com/stackrox/workflow/env.sh"
-fi
-
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 
-if [ -d "$HOME/ext/nvim-osx64" ]; then
-    export PATH="$PATH:$HOME/ext/nvim-osx64/bin"
-fi
+source "${HOME}/.config/stringy/common.sh"
+source "${HOME}/.config/stringy/path.sh"
+source "${HOME}/.config/stringy/stackrox.sh"
 
-if [ -f "$HOME/.aliases" ]; then
-    source "$HOME/.aliases"
-fi
-
-if [ -d "$HOME/scripts" ]; then
-    export PATH="$PATH:$HOME/scripts"
-fi
-
-if [ -d "$HOME/homebrew/opt/binutils" ]; then
-    export PATH="$PATH:$HOME/homebrew/opt/binutils/bin"
-fi
-
-export PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
-export PATH="$PATH:$PYTHON_BIN_PATH"
-export PATH="/Users/ghutton/homebrew/opt/llvm/bin:$PATH"
-export LIBRARY_PATH=:/opt/homebrew/lib
+_import_all_command_aliases
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
