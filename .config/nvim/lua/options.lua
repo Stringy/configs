@@ -33,8 +33,9 @@ o.splitright = true
 o.swapfile = false
 o.wrap = false
 o.writebackup = false
-o.background = "light"
+o.background = "dark"
+o.spell = true
 
 vim.cmd([[
-colorscheme solarized
+colorscheme gruvbox
 ]])

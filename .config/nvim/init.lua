@@ -41,6 +41,13 @@ require('packer').startup(function(use)
     use 'lukas-reineke/indent-blankline.nvim'
     use 'lukas-reineke/lsp-format.nvim'
     use 'shaunsingh/solarized.nvim'
+    use {
+        "iamcco/markdown-preview.nvim",
+        run = function() vim.fn["mkdp#util#install"]() end,
+    }
+
+    use 'hrsh7th/vim-vsnip'
+    use 'hrsh7th/vim-vsnip-integ'
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins
