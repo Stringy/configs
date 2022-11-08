@@ -19,7 +19,6 @@ function _import_all_command_aliases() {
     for cmd in ${STRINGY_CONFIG_ROOT}/commands/*; do
         filename=$(basename -- "$cmd")
         command_name="${filename%.*}"
-        echo "${command_name}"
         _import_command_aliases "$command_name"
     done
 }
