@@ -32,7 +32,7 @@ function _ssh_add_if_not_exists() {
 }
 
 function cdme() {
-    _echo_and_run cd "${HOME}/code/stringy"
+    _echo_and_run cd "${HOME}/code/stringy/${1}"
 }
 
 function cdgo() {

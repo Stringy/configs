@@ -1,14 +1,14 @@
 #!/bin/bash
 
-export PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
-export PATH="$PATH:$PYTHON_BIN_PATH"
-
 export PATH="/Users/ghutton/homebrew/opt/llvm/bin:$PATH"
 
 export GOPATH="$HOME/code/go"
 
-export PATH="$PATH:$HOME/homebrew/bin"
+export PATH="$HOME/homebrew/bin:$PATH"
 export PATH="$PATH:$HOME/code/go/bin"
+
+export PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
+export PATH="$PATH:$PYTHON_BIN_PATH"
 
 if [ -d "$HOME/ext/nvim-osx64" ]; then
     export PATH="$PATH:$HOME/ext/nvim-osx64/bin"
