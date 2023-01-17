@@ -14,7 +14,7 @@ nest.applyKeymaps {
             { 'fb', ':Telescope buffers<CR>' },
             { 'fh', ':Telescope help_tags<CR>' },
             { 'fs', ':Telescope grep_string<CR>' },
-	    -- tab controls
+            -- tab controls
             { '1', '1gt' },
             { '2', '2gt' },
             { '3', '3gt' },
@@ -25,7 +25,15 @@ nest.applyKeymaps {
             { '8', '8gt' },
             { '9', '9gt' },
             { '0', ':tablast<CR>' },
+
+            { 'nn', require('stringy.trimmers').newlines },
         }
     }
 }
 
+local stringy = vim.api.nvim_create_augroup('STRINGY', { clear = true })
+
+vim.api.nvim_create_autocmd('BufWritePre', {
+    group = stringy,
+    callback = require('stringy.trimmers').whitespace,
+})
