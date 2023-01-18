@@ -24,6 +24,14 @@ function vagrant_complete() {
     COMPREPLY=($(cd "${_VAGRANT_ROOT}" && compgen -d))
 }
 
+function vssh-key-rm() (
+    set -e
+    cd "${_VAGRANT_ROOT}/${1}"
+    ip="$(vagrant ssh -c "hostname -i | tr ' ' '\n' | grep 192 | tr -d '[:space:]'")"
+    ssh-keygen -R "$ip"
+)
+
 complete -F vagrant_complete vssh
 complete -F vagrant_complete vcd
 complete -F vagrant_complete vssh-add
+complete -F vagrant_complete vssh-key-rm
