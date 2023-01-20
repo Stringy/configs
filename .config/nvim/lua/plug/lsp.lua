@@ -38,11 +38,17 @@ local lsp_flags = {
 }
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 local lspconfig = require('lspconfig')
 
-for _, lsp in ipairs({ 'rust_analyzer', 'clangd', 'gopls', 'cmake', 'jedi_language_server' }) do
+for _, lsp in ipairs({
+    'rust_analyzer',
+    --'clangd',
+    'gopls',
+    'cmake',
+    'jedi_language_server'
+}) do
     lspconfig[lsp].setup {
         on_attach = on_attach,
         flags = lsp_flags,

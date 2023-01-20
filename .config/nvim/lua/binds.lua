@@ -31,9 +31,9 @@ nest.applyKeymaps {
     }
 }
 
-local stringy = vim.api.nvim_create_augroup('STRINGY', { clear = true })
+-- local stringy = vim.api.nvim_create_augroup('STRINGY', { clear = true })
 
-vim.api.nvim_create_autocmd('BufWritePre', {
-    group = stringy,
-    callback = require('stringy.trimmers').whitespace,
-})
+-- vim.api.nvim_create_autocmd('BufWritePre', {
+--     group = stringy,
+--     callback = require('stringy.trimmers').whitespace,
+-- })
