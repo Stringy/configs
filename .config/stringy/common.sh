@@ -2,7 +2,7 @@
 
 export STRINGY_CONFIG_ROOT="${HOME}/.config/stringy"
 
-alias vim=nvim
+alias vim='nvim'
 
 function _echo_and_run() {
     echo "[*]" $@
