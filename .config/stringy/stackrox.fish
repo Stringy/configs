@@ -1,6 +1,6 @@
 
 if test -f $HOME/.infra
-    set -Ux INFRA_TOKEN (cat $HOME/.infra | cut -d '=' -f2)
+    set -gx INFRA_TOKEN (cat $HOME/.infra | cut -d '=' -f2)
 end
 
 function push-collector-ghutton --description "Push the current collector image to my repository"
