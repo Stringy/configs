@@ -1,15 +1,16 @@
+set -Ux VAGRANT_VMS_ROOT $HOME/code/stringy/dev-tools/vagrant
 
-function vssh --description 'SSH into a vagrant VM'
-    pushd "$HOME/vagrant/$argv[1]" or return
+function vssh --description 'SSH into a vagrant VM' --wraps "cd $VAGRANT_VMS_ROOT"
+    pushd "$VAGRANT_VMS_ROOT/$argv[1]" or return
         vagrant ssh -- $argv[2..]
     popd
 end
 
-function vcd --description 'Go to a specific vagrant VM'
-    cd "$HOME/vagrant/$argv[1]"
+function vcd --description 'Go to a specific vagrant VM' --wraps "cd $VAGRANT_VMS_ROOT"
+    cd "$VAGRANT_VMS_ROOT/$argv[1]"
 end
 
-alias vup="vagrant up"
+function vup --wraps='vagrant up' --description 'Brings up a vagrant VM'
+  vagrant up $argv;
+end
 
-complete --command vssh -F --arguments "(complete_in_dir $HOME/vagrant)"
-complete --command vcd -F --arguments "(complete_in_dir $HOME/vagrant)"
