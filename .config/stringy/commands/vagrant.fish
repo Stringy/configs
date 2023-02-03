@@ -14,3 +14,5 @@ function vup --wraps='vagrant up' --description 'Brings up a vagrant VM'
   vagrant up $argv;
 end
 
+complete -x --command vcd --arguments "(complete_in_dir $VAGRANT_VMS_ROOT)"
+complete -x --command vssh --arguments "(complete_in_dir $VAGRANT_VMS_ROOT)"

@@ -1,3 +1,4 @@
+set -gx STACKROX_ROOT $GOPATH/src/github.com/stackrox
 
 if test -f $HOME/.infra
     set -gx INFRA_TOKEN (cat $HOME/.infra | cut -d '=' -f2)
@@ -8,8 +9,8 @@ function push-collector-ghutton --description "Push the current collector image 
     docker push quay.io/ghutton/collector:test
 end
 
-function cdrox --description "cd into a ROX directory" --wraps "cd $GOPATH/src/github.com/stackrox/"
-    cd $GOPATH/src/github.com/stackrox/$argv[1]
+function cdrox --description "cd into a ROX directory"
+    cd $STACKROX_ROOT/$argv[1]
 end
 
-#complete --command cdrox -F --arguments "(complete_in_dir $GOPATH/src/github.com/stackrox/)"
+complete -x --command cdrox --arguments "(complete_in_dir $STACKROX_ROOT)"
