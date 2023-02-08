@@ -6,4 +6,7 @@ alias roxpods="kubectl -n stackrox get pods"
 
 set -U KUBE_EDITOR "nvim"
 
-source (kubectl completion fish | psub -f)
+if type -q "kubectl";
+    source (kubectl completion fish | psub -f)
+end
+
