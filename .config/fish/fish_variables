@@ -1,6 +1,6 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
-SETUVAR --export --path GOPATH:/Users/giles/code/go
+SETUVAR --export --path GOPATH:/Users/ghutton/code/go
 SETUVAR KUBE_EDITOR:nvim
 SETUVAR --export --path LIBRARY_PATH:\x1e/opt/homebrew/lib
 SETUVAR --export VAGRANT_VMS_ROOT:/Users/giles/code/stringy/dev\x2dtools/vagrant

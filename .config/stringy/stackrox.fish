@@ -10,7 +10,11 @@ function push-collector-ghutton --description "Push the current collector image 
 end
 
 function cdrox --description "cd into a ROX directory"
-    cd $STACKROX_ROOT/$argv[1]
+    if count $argv >/dev/null
+        cd $STACKROX_ROOT/$argv[1]
+    else
+        cd $STACKROX_ROOT/stackrox
+    end
 end
 
 complete -x --command cdrox --arguments "(complete_in_dir $STACKROX_ROOT)"

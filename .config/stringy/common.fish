@@ -3,6 +3,7 @@ source $HOME/.config/stringy/utils.fish
 
 alias vim="nvim"
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
+alias editstringy="nvim $HOME/.config/stringy"
 
 source $HOME/.config/stringy/binds.fish
 
@@ -14,3 +15,5 @@ for cfg in $HOME/.config/stringy/commands/*.fish
 end
 
 source $HOME/.config/stringy/fish/plugins.fish
+
+alias cdme="cd $HOME/code/stringy"
