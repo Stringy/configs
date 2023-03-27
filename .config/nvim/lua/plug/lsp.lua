@@ -47,7 +47,8 @@ for _, lsp in ipairs({
     --'clangd',
     'gopls',
     'cmake',
-    'jedi_language_server'
+    'jedi_language_server',
+    'marksman'
 }) do
     lspconfig[lsp].setup {
         on_attach = on_attach,
@@ -56,7 +57,7 @@ for _, lsp in ipairs({
     }
 end
 
-lspconfig.sumneko_lua.setup {
+lspconfig.lua_ls.setup {
     on_attach = on_attach,
     settings = {
         Lua = {
