@@ -21,3 +21,5 @@ require('telescope').setup({
         '.git'
     }
 })
+
+require('telescope').load_extension('fzf')

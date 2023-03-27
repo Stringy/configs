@@ -9,6 +9,4 @@ function ssh-add-if-not-exists --description "Add an SSH key if it does not exis
     end
 end
 
-ssh-add-if-not-exists $HOME/.ssh/id_rsa
-ssh-add-if-not-exists $HOME/.ssh/id_ed25519
 ssh-add-if-not-exists $HOME/.ssh/google_compute_engine

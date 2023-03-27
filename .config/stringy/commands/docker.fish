@@ -7,7 +7,7 @@ function docker-bash --description "run bash in a given image"
         return 0
     end
 
-    docker run -it --rm --entrypoint bash $argv[1]
+    docker run -it --rm --entrypoint /bin/bash $argv[1]
 end
 
 function docker-push-ghutton --description "Retag and push an image for ghutton quay repo"
@@ -22,6 +22,13 @@ end
 function docker-push-collector-ghutton --description "Push the latest collector image"
     set -l tag (cd $GOPATH/src/github.com/stackrox/collector && make tag)
     docker-push-ghutton quay.io/stackrox-io/collector:$tag
+end
+
+function docker-update-ssh-context --description "Updates the address of an SSH-based context"
+    set -l address $argv[1]
+    set -l context $argv[2]
+
+    docker context update --docker host="ssh://$address" $context
 end
 
 alias docker-image-names="docker images --format '{{.Repository}}:{{.Tag}}'"

@@ -18,3 +18,5 @@ function cdrox --description "cd into a ROX directory"
 end
 
 complete -x --command cdrox --arguments "(complete_in_dir $STACKROX_ROOT)"
+
+alias cdc='cdrox collector'

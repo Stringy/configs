@@ -44,7 +44,7 @@ local lspconfig = require('lspconfig')
 
 for _, lsp in ipairs({
     'rust_analyzer',
-    --'clangd',
+    'clangd',
     'gopls',
     'cmake',
     'jedi_language_server'
@@ -56,7 +56,7 @@ for _, lsp in ipairs({
     }
 end
 
-lspconfig.sumneko_lua.setup {
+lspconfig.lua_lsp.setup {
     on_attach = on_attach,
     settings = {
         Lua = {
