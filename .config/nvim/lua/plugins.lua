@@ -7,3 +7,4 @@ require('plug/null-ls')
 require('plug/vimwiki')
 
 require('symbols-outline').setup()
+require('trouble').setup {}
