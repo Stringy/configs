@@ -97,6 +97,8 @@ require('packer').startup(function(use)
             'nvim-tree/nvim-web-devicons'
         }
     }
+    use 'rudism/telescope-dict.nvim'
+
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins

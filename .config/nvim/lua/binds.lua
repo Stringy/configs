@@ -15,6 +15,7 @@ nest.applyKeymaps {
         { 'fb', ':Telescope buffers<CR>' },
         { 'fh', ':Telescope help_tags<CR>' },
         { 'fs', ':Telescope grep_string<CR>' },
+        { 'fd', require('telescope').extensions.dict.synonyms },
         { 'ss', ':SymbolsOutline<CR>' },
         { 'fo', ':Goyo<CR>' },
         -- tab controls
