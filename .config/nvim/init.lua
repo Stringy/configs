@@ -81,10 +81,16 @@ require('packer').startup(function(use)
         }
     }
 
-    use {'nvim-telescope/telescope-fzf-native.nvim', run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
+    use {
+        'nvim-telescope/telescope-fzf-native.nvim',
+        run =
+        'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
+    }
 
     use 'simrat39/symbols-outline.nvim'
     use 'junegunn/goyo.vim'
+
+    use { 'vimwiki/vimwiki' }
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins
