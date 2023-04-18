@@ -16,7 +16,6 @@ require('packer').startup(function(use)
         },
         tag = 'nightly'
     }
-    use 'morhetz/gruvbox'
     use 'neovim/nvim-lspconfig'
     use 'williamboman/nvim-lsp-installer'
     use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
@@ -40,7 +39,6 @@ require('packer').startup(function(use)
     use 'tpope/vim-surround'
     use 'lukas-reineke/indent-blankline.nvim'
     use 'lukas-reineke/lsp-format.nvim'
-    use 'shaunsingh/solarized.nvim'
     use {
         "iamcco/markdown-preview.nvim",
         run = function() vim.fn["mkdp#util#install"]() end,
@@ -98,7 +96,8 @@ require('packer').startup(function(use)
         }
     }
     use 'rudism/telescope-dict.nvim'
-
+    use { 'catppuccin/nvim', as = 'catppuccin' }
+    use { "ellisonleao/gruvbox.nvim" }
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins

@@ -37,5 +37,5 @@ o.background  = "dark"
 -- o.spell = true
 
 vim.cmd([[
-colorscheme gruvbox
+colorscheme catppuccin-mocha
 ]])
