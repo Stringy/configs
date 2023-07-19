@@ -14,6 +14,10 @@ for cfg in $HOME/.config/stringy/commands/*.fish
     source $cfg
 end
 
+for cfg in $HOME/.config/stringy/tools/*.fish
+    source $cfg
+end
+
 source $HOME/.config/stringy/fish/plugins.fish
 
 alias cdme="cd $HOME/code/stringy"
