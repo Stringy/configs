@@ -1,0 +1,47 @@
+---
+
+- name: Install docker repos
+  run: |
+    dnf -y install dnf-plugins-core
+    dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+
+- name: Install dependencies
+  dnf:
+    name:
+      - make
+      - jq
+      - golang
+      - git
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: latest
+
+- name: Add authorized key
+  authorized_key:
+    user: vagrant
+    state: present
+    exclusive: true
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.var/qemu/fedora/id_rsa.pub') }}"
+
+- name: Add authorized key root
+  authorized_key:
+    user: root
+    state: present
+    exclusive: true
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.var/qemu/fedora/id_rsa.pub') }}"
+
+- name: Enable Root Login
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: "PermitRootLogin yes"
+    state: present
+    backup: yes
+
+- name: Restart SSHD
+  systemd:
+    name: sshd
+    state: restarted
