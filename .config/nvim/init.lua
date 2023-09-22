@@ -1,53 +1,91 @@
 local fn = vim.fn
-local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
-local packer_bootstrap
-if fn.empty(fn.glob(install_path)) > 0 then
-    packer_bootstrap = fn.system({ 'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim',
-        install_path })
+local lazy_path = fn.stdpath('data') .. '/lazy/lazy.nvim'
+
+if not vim.loop.fs_stat(lazy_path) then
+    fn.system({
+        'git', 'clone',
+        '--filter=blob:none',
+        'https://github.com/folke/lazy.nvim.git',
+        '--branch=stable',
+        lazy_path
+    })
 end
 
-require('packer').startup(function(use)
+vim.opt.rtp:prepend(lazy_path)
+
+require('lazy').setup({
     -- My plugins here
-    use 'wbthomason/packer.nvim'
-    use {
+    {
         'kyazdani42/nvim-tree.lua',
-        requires = {
-            'kyazdani42/nvim-web-devicons',
+        dependencies = {
+            'nvim-tree/nvim-web-devicons',
         },
-        tag = 'nightly'
-    }
-    use 'neovim/nvim-lspconfig'
-    use 'williamboman/nvim-lsp-installer'
-    use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
-    use 'LionC/nest.nvim'
-    use 'hrsh7th/nvim-cmp'
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'hrsh7th/cmp-buffer'
-    -- use 'gauteh/vim-cppman'
-    use {
-        'nvim-telescope/telescope.nvim',
-        requires = {
-            { 'nvim-lua/plenary.nvim' }
+        version = 'nightly'
+    },
+    'neovim/nvim-lspconfig',
+    'williamboman/nvim-lsp-installer',
+    {
+        'nvim-treesitter/nvim-treesitter',
+        config = function()
+            require('plug/treesitter')
+        end,
+        lazy = false
+    },
+    {
+        'LionC/nest.nvim',
+        lazy = false,
+        config = function()
+            require('binds')
+        end
+    },
+    {
+        'hrsh7th/nvim-cmp',
+        config = function()
+            require('plug/cmp')
+        end,
+        dependencies = {
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-buffer',
         }
-    }
-    use 'habamax/vim-godot'
-    use {
+    },
+    'hrsh7th/cmp-nvim-lsp',
+    'hrsh7th/cmp-buffer',
+    -- use 'gauteh/vim-cppman'
+    {
+        'nvim-telescope/telescope.nvim',
+        dependencies = {
+            { 'nvim-lua/plenary.nvim' }
+        },
+        keys = {
+            '<leader>ff',
+            '<leader>fg',
+            '<leader>fb',
+            '<leader>fh',
+            '<leader>fs',
+            '<leader>fd',
+        },
+        config = function()
+            require('plug/telescope')
+        end
+    },
+    'habamax/vim-godot',
+    {
         'romgrk/barbar.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons' }
-    }
-    use 'tpope/vim-fugitive'
-    use 'tpope/vim-surround'
-    use 'lukas-reineke/indent-blankline.nvim'
-    use 'lukas-reineke/lsp-format.nvim'
-    use {
+        dependencies = { 'nvim-tree/nvim-web-devicons' }
+    },
+    'tpope/vim-fugitive',
+    'tpope/vim-surround',
+    'lukas-reineke/indent-blankline.nvim',
+    'lukas-reineke/lsp-format.nvim',
+    {
         "iamcco/markdown-preview.nvim",
-        run = function() vim.fn["mkdp#util#install"]() end,
-    }
+        build = function() vim.fn["mkdp#util#install"]() end,
+    },
 
-    use 'hrsh7th/vim-vsnip'
-    use 'hrsh7th/vim-vsnip-integ'
+    'hrsh7th/vim-vsnip',
+    'hrsh7th/vim-vsnip-integ',
 
-    use {
+    {
         "folke/which-key.nvim",
         config = function()
             vim.o.timeout = true
@@ -58,53 +96,70 @@ require('packer').startup(function(use)
                 -- refer to the configuration section below
             }
         end
-    }
+    },
 
-    use {
+    {
         'pwntester/octo.nvim',
-        requires = {
+        dependencies = {
             'nvim-lua/plenary.nvim',
             'nvim-telescope/telescope.nvim',
-            'kyazdani42/nvim-web-devicons'
+            'nvim-tree/nvim-web-devicons'
+        },
+    },
+
+    {
+        'jose-elias-alvarez/null-ls.nvim',
+        dependencies = {
+            { 'nvim-lua/plenary.nvim' }
         },
         config = function()
-            require('octo').setup()
+            require('plug/null-ls')
         end
-    }
+    },
 
-    use {
-        'jose-elias-alvarez/null-ls.nvim',
-        requires = {
-            { 'nvim-lua/plenary.nvim' }
-        }
-    }
-
-    use {
+    {
         'nvim-telescope/telescope-fzf-native.nvim',
-        run =
+        build =
         'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
-    }
+    },
 
-    use 'simrat39/symbols-outline.nvim'
-    use 'junegunn/goyo.vim'
-
-    use { 'vimwiki/vimwiki' }
-    use {
-        'folke/trouble.nvim',
-        requires = {
-            'nvim-tree/nvim-web-devicons'
+    'simrat39/symbols-outline.nvim',
+    {
+        'junegunn/goyo.vim',
+        keys = {
+            '<leader>fo'
         }
-    }
-    use 'rudism/telescope-dict.nvim'
-    use { 'catppuccin/nvim', as = 'catppuccin' }
-    use { "ellisonleao/gruvbox.nvim" }
+    },
 
-    -- Automatically set up your configuration after cloning packer.nvim
-    -- Put this at the end after all plugins
-    if packer_bootstrap then
-        require('packer').sync()
-    end
-end)
+    {
+        'vimwiki/vimwiki',
+        config = function()
+            require('plug/vimwiki')
+        end
+    },
+
+    {
+        'folke/trouble.nvim',
+        dependencies = {
+            'nvim-tree/nvim-web-devicons'
+        },
+    },
+    'rudism/telescope-dict.nvim',
+    {
+        'catppuccin/nvim',
+        name = 'catppuccin',
+        lazy = false,
+        config = function()
+            require('plug/colorscheme')
+        end
+    },
+    {
+        "ellisonleao/gruvbox.nvim",
+        lazy = false
+    },
+
+    { 'LunarVim/bigfile.nvim' },
+})
 
 require('binds')
 require('options')
