@@ -3,6 +3,7 @@ set -gx GOPATH $HOME/code/go
 fish_add_path $HOME/homebrew/opt/llvm/bin
 fish_add_path $HOME/code/go/bin
 fish_add_path $HOME/homebrew/bin
+fish_add_path $HOME/.cargo/bin
 fish_add_path /opt/homebrew/bin
 fish_add_path $HOME/etc/google-cloud-sdk/bin
 

@@ -35,6 +35,7 @@ o.wrap        = false
 o.writebackup = false
 o.background  = "dark"
 -- o.spell = true
+o.guifont = "Monaspace Xenon"
 
 vim.cmd([[
 colorscheme catppuccin-mocha
