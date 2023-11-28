@@ -1,0 +1,6 @@
+---
+
+- name: Install fish
+  package:
+    name: fish
+    state: latest
