@@ -1,0 +1,14 @@
+---
+
+- name: Setup Development Machine
+  hosts: localhost
+
+  tasks:
+    - name: Platform specific tasks
+      include_tasks: "{{ ansible_facts['os_family'] | lower }}.yml"
+
+    - name: Install neovim
+      include_tasks: neovim.yml
+
+    - name: Install fish
+      include_tasks: fish.yml

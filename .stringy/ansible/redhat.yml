@@ -1,0 +1,13 @@
+---
+
+- name: Install tools
+  dnf:
+    name:
+      - make
+      - jq
+      - wget
+      - golang
+      - kernel-devel
+      - cmake
+      - clang
+    state: latest
