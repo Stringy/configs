@@ -90,9 +90,9 @@ function collector-clone --description "clone collector repository into GOPATH"
         mkdir -p $GOPATH/src/github.com/stackrox
     end
 
-    set -q _flag_h or set -l _flag_h false
+    set -q _flag_h or set -l _flag_h 1
 
-    if $_flag_h == false
+    if test $_flag_h -eq 0
         set -l url git@github.com:stackrox/collector.git
     else
         set -l url https://github.com/stackrox/collector.git
