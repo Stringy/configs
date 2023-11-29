@@ -14,7 +14,7 @@
 - name: Install
   synchronize:
     src: /tmp/neovim-linux64/{{ item }}/
-    dest: /{{ item }}/
+    dest: /usr/{{ item }}/
   loop:
     - bin
     - share
