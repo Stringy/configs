@@ -77,3 +77,27 @@ end
 complete -x --command cdrox --arguments "(complete_in_dir $STACKROX_ROOT)"
 
 alias cdc='cdrox collector'
+
+function collector-clone --description "clone collector repository into GOPATH"
+    argparse h/https= -- $argv
+
+    if test -d $GOPATH/src/github.com/stackrox/collector
+        echo "Collector already cloned!"
+        return 1
+    end
+
+    if not test -d $GOPATH/src/github.com/stackrox
+        mkdir -p $GOPATH/src/github.com/stackrox
+    end
+
+    set -q _flag_h or set -l _flag_h false
+
+    if $_flag_h == false
+        set -l url git@github.com:stackrox/collector.git
+    else
+        set -l url https://github.com/stackrox/collector.git
+    end
+
+    git clone --recursive $url
+end
+
