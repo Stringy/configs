@@ -4,3 +4,8 @@
   package:
     name: fish
     state: latest
+
+- name: Set user shell
+  user:
+    name: ghutton
+    shell: /bin/fish

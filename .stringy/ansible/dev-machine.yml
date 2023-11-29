@@ -2,8 +2,15 @@
 
 - name: Setup Development Machine
   hosts: localhost
+  become: true
 
   tasks:
+    - name: Install common dependencies
+      package:
+        name:
+          - rsync
+        state: present
+
     - name: Platform specific tasks
       include_tasks: "{{ ansible_facts['os_family'] | lower }}.yml"
 
