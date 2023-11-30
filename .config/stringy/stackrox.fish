@@ -90,13 +90,11 @@ function collector-clone --description "clone collector repository into GOPATH"
         mkdir -p $GOPATH/src/github.com/stackrox
     end
 
-    if set -q _flag_h
-        set -f url https://github.com/stackrox/collector.git
-    else
-        set -f url git@github.com:stackrox/collector.git
-    end
-
     set -l fish_trace 1
-    git clone --recursive $url
+    if set -q _flag_h
+        git clone --recursive https://github.com/stackrox/collector.git $GOPATH/src/github.com/stackrox/collector
+    else
+        git clone --recursive git@github.com:stackrox/collector.git $GOPATH/src/github.com/stackrox/collector
+    end
 end
 
