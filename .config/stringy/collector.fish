@@ -24,7 +24,7 @@ function collector-test --description "Run collector test"
     end
 
     if test -z "$_flag_v"
-        set _flag_v (make -C $collector_dir tag)
+        set _flag_v (make --no-print-directory -C $collector_dir tag)
     end
 
     if test -n "$_flag_t"
