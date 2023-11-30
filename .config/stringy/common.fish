@@ -10,6 +10,7 @@ source $HOME/.config/stringy/binds.fish
 
 source $HOME/.config/stringy/path.fish
 source $HOME/.config/stringy/stackrox.fish
+source $HOME/.config/stringy/collector.fish
 
 for cfg in $HOME/.config/stringy/commands/*.fish
     source $cfg
