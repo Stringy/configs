@@ -27,7 +27,7 @@ function collector-test --description "Run collector test"
         set _flag_v (make --no-print-directory -C $collector_dir tag)
     end
 
-    if test -n "$_flag_t"
+    if test -z "$_flag_t"
         set _flag_t ci-integration-tests
     end
 
