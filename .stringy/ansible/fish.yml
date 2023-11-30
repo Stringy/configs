@@ -9,3 +9,25 @@
   user:
     name: ghutton
     shell: /bin/fish
+
+- name: Download oh-my-fish
+  get_url:
+    url: https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install
+    dest: /tmp/omf-install.sh
+    mode: 755
+
+- name: Download fundle
+  get_url:
+    url: https://git.io/fundle-install
+    dest: /tmp/fundle-install.sh
+    mode: 755
+
+- name: Install oh-my-fish
+  shell:
+    cmd: /tmp/omf-install.sh
+    executable: /bin/fish
+
+- name: Install fundle
+  shell: 
+    cmd: /tmp/fundle-install.sh
+    executable: /bin/fish
