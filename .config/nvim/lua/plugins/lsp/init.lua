@@ -2,6 +2,17 @@ local common = require('plugins.lsp.common')
 
 return {
     {
+        "williamboman/mason.nvim",
+        lazy = false
+    },
+
+    {
+        "williamboman/mason-lspconfig.nvim",
+        lazy = false,
+        dependencies = { 'williamboman/mason.nvim' }
+    },
+
+    {
         'neovim/nvim-lspconfig',
         dependencies = {
             'hrsh7th/cmp-nvim-lsp',

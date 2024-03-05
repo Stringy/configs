@@ -6,6 +6,7 @@ fish_add_path $HOME/homebrew/bin
 fish_add_path $HOME/.cargo/bin
 fish_add_path /opt/homebrew/bin
 fish_add_path $HOME/etc/google-cloud-sdk/bin
+fish_add_path $HOME/.dotnet/tools
 
 if test -f $HOME/etc/nvim-osx64
     fish_add_path $HOME/ext/nvim-osx64/bin
