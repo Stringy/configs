@@ -50,7 +50,8 @@ M.common = function()
         'gopls',
         'cmake',
         'jedi_language_server',
-        'marksman'
+        'marksman',
+        'csharp_ls'
     }) do
         lspconfig[lsp].setup {
             on_attach = M.on_attach,
