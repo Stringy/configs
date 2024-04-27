@@ -10,6 +10,7 @@ nest.applyKeymaps {
     {
         '<leader>', {
         { 'd',  ':NvimTreeToggle<CR>' },
+        { 'z',  ':ZenMode<CR>' },
         { 'ff', ':Telescope find_files<CR>' },
         { 'fg', ':Telescope live_grep<CR>' },
         { 'fb', ':Telescope buffers<CR>' },

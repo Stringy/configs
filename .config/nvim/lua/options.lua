@@ -40,3 +40,10 @@ o.guifont = "Monaspace Xenon"
 vim.cmd([[
 colorscheme catppuccin-mocha
 ]])
+
+vim.api.nvim_create_augroup('setLineLength', {clear=true})
+vim.api.nvim_create_autocmd('FileType', {
+    group = 'setLineLength',
+    pattern = {'markdown', 'text'},
+    command = 'setlocal cc=0 textwidth=79 formatexpr='
+})

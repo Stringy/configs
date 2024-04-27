@@ -43,13 +43,6 @@ return {
     },
 
     {
-        'vimwiki/vimwiki',
-        config = function()
-            require('vimwiki')
-        end
-    },
-
-    {
         'catppuccin/nvim',
         name = 'catppuccin',
         lazy = false,
@@ -79,5 +72,18 @@ return {
         config = function()
             require('nvim-tree').setup()
         end
+    },
+
+    {
+        'folke/zen-mode.nvim',
+        opts = {
+            window = {
+                width = 89,
+                options = {
+                    number = false,
+                    relativenumber = false,
+                },
+            },
+        }
     },
 }
