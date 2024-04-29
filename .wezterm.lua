@@ -11,6 +11,12 @@ config.keys = {
         mods = 'CMD|SHIFT',
         action = wezterm.action.ReloadConfiguration,
     },
+    {
+        key = 'l',
+        mods = 'CMD|SHIFT',
+        action = wezterm.action.ShowLauncher,
+    },
 }
+
 
 return config
