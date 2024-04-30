@@ -1,5 +1,6 @@
 local o       = vim.opt
 
+o.shell       = '/bin/bash'
 o.compatible  = false
 o.showmatch   = true
 o.ignorecase  = true
