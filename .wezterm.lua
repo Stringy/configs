@@ -2,12 +2,12 @@ local wezterm = require 'wezterm'
 
 local config = wezterm.config_builder()
 
+local dark_theme = 'Gruvbox Dark'
+local light_theme = 'Gruvbox Light'
+
 config.font = wezterm.font_with_fallback { 'DejaVuSansMono Nerd Font', 'DejaVuSansM Nerd Font Mono' }
 config.font_size = 11.0
-config.color_scheme = 'Material'
-
-local dark_theme = 'MaterialDark'
-local light_theme = 'Material'
+config.color_scheme = light_theme
 
 wezterm.on('toggle-colorscheme', function(window, pane)
     local overrides = window:get_config_overrides() or {}

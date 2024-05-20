@@ -73,7 +73,9 @@ return {
 
     {
         "ellisonleao/gruvbox.nvim",
-        lazy = false
+        lazy = false,
+        priority = 1000,
+        config = true
     },
 
     {

@@ -38,8 +38,9 @@ o.background  = "dark"
 -- o.spell = true
 o.guifont     = "Monaspace Xenon"
 
+o.background  = "light"
 vim.cmd([[
-colorscheme material
+colorscheme gruvbox
 ]])
 
 vim.g.material_style = "lighter"
