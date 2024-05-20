@@ -35,15 +35,17 @@ o.wrap        = false
 o.writebackup = false
 o.background  = "dark"
 -- o.spell = true
-o.guifont = "Monaspace Xenon"
+o.guifont     = "Monaspace Xenon"
 
 vim.cmd([[
-colorscheme catppuccin-mocha
+colorscheme material
 ]])
 
-vim.api.nvim_create_augroup('setLineLength', {clear=true})
+vim.g.material_style = "lighter"
+
+vim.api.nvim_create_augroup('setLineLength', { clear = true })
 vim.api.nvim_create_autocmd('FileType', {
     group = 'setLineLength',
-    pattern = {'markdown', 'text'},
+    pattern = { 'markdown', 'text' },
     command = 'setlocal cc=0 textwidth=79 formatexpr='
 })

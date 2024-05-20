@@ -32,6 +32,7 @@ nest.applyKeymaps {
         { '0',  ':tablast<CR>' },
 
         { 'nn', require('stringy.trimmers').newlines },
+        { 't',  require('stringy.misc').toggle_theme },
     }
     }
 }

@@ -54,6 +54,20 @@ return {
             })
         end
     },
+    {
+        'marko-cerovac/material.nvim',
+        lazy = false,
+        config = function()
+            require('material').setup({
+                plugins = {
+                    'telescope',
+                    'which-key',
+                    'nvim-tree',
+                }
+            })
+            require('material.functions').change_style('lighter')
+        end
+    },
 
     { 'LunarVim/bigfile.nvim' },
 
