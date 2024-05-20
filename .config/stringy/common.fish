@@ -22,5 +22,6 @@ end
 
 source $HOME/.config/stringy/fish/plugins.fish
 source $HOME/.config/stringy/vms.fish
+source $HOME/.config/stringy/writing.fish
 
 alias cdme="cd $HOME/code/stringy"
