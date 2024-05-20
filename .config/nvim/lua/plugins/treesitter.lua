@@ -30,7 +30,7 @@ return {
             },
         }
 
-        require('nvim-treesitter.install').compilers = { 'gcc' }
+        require('nvim-treesitter.install').compilers = { 'gcc', 'clang', 'gcc-12' }
     end,
     lazy = false
 }
