@@ -22,3 +22,9 @@
 
     - name: Install fish
       include_tasks: fish.yml
+
+    - name: Brew
+      include_tasks: brew.yml
+
+    - name: Flatpak
+      include_tasks: flatpak.yml

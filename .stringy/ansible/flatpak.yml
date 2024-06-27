@@ -1,0 +1,14 @@
+---
+
+- name: Install flatpaks
+  community.general.flatpak:
+    method: user
+    name:
+      - org.wezfurlong.wezterm
+      - com.obsproject.Studio
+      - md.obsidian.Obsidian
+      - com.bitwarden.desktop
+      - com.slack.Slack
+      - com.todoist.Todoist
+      - com.yubico.yubioath
+
