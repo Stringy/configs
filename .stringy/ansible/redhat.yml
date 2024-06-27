@@ -15,3 +15,4 @@
       - https://github.com/gitify-app/gitify/releases/download/v5.9.0/gitify-5.9.0.x86_64.rpm
       # - https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: latest
+    disable_gpg_check: true
