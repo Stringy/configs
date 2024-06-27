@@ -12,8 +12,10 @@
       become: true
 
     - name: Platform specific tasks
-      include_tasks: "{{ ansible_facts['os_family'] | lower }}.yml"
-      become: true
+      include_tasks:
+        file: "{{ ansible_facts['os_family'] | lower }}.yml"
+        apply:
+          become: true
 
     - name: Install neovim
       include_tasks: neovim.yml
