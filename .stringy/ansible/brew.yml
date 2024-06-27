@@ -3,10 +3,3 @@
 - name: Install brew
   shell: |
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-- name: Install brew casks
-  community.general.homebrew:
-    name:
-      - gitify
-    install_options:
-      - --cask
