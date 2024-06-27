@@ -1,6 +1,7 @@
 ---
 
 - name: Install fish
+  become: true
   package:
     name: fish
     state: latest
@@ -9,25 +10,21 @@
   get_url:
     url: https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install
     dest: /tmp/omf-install.sh
-    mode: 755
+    mode: 0755
+    force: true
 
 - name: Download fundle
   get_url:
-    url: https://git.io/fundle-install
-    dest: /tmp/fundle-install.sh
-    mode: 755
-
-- name: Install fundle
-  shell:
-    cmd: /tmp/fundle-install.sh
-    executable: /bin/fish
+    url: https://git.io/fundle
+    dest: "{{ lookup('env', 'HOME') }}/.config/fish/functions/fundle.fish"
 
 - name: Install oh-my-fish
   shell:
-    cmd: /tmp/omf-install.sh
+    cmd: /tmp/omf-install.sh --yes --noninteractive
     executable: /bin/fish
 
 - name: Set user shell
+  become: true
   user:
     name: ghutton
     shell: /bin/fish

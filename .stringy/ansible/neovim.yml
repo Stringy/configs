@@ -12,6 +12,7 @@
     dest: /tmp/
 
 - name: Install
+  become: true
   synchronize:
     src: /tmp/nvim-linux64/{{ item }}/
     dest: /usr/{{ item }}/
@@ -20,6 +21,7 @@
     - share
     - lib
     - man
+  ignore_errors: true
 
 - name: Install plugins
   shell:
