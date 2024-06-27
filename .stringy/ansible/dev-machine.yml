@@ -2,7 +2,6 @@
 
 - name: Setup Development Machine
   hosts: localhost
-  become: true
 
   tasks:
     - name: Install common dependencies
@@ -10,9 +9,11 @@
         name:
           - rsync
         state: present
+      become: true
 
     - name: Platform specific tasks
       include_tasks: "{{ ansible_facts['os_family'] | lower }}.yml"
+      become: true
 
     - name: Install neovim
       include_tasks: neovim.yml
