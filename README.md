@@ -1,4 +1,12 @@
-# Config files. 
+# Config files.
+
+## Quickstart
+
+```
+/bin/bash <(curl -fsSL https://raw.githubusercontent.com/Stringy/configs/main/.stringy/setup.sh)
+```
+
+## Slowstart
 
 Uses a bare repo method to store these and check them out properly (as detailed here: https://www.atlassian.com/git/tutorials/dotfiles)
 
