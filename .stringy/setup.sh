@@ -11,6 +11,6 @@ git clone --bare https://github.com/stringy/configs $HOME/.cfg
 config checkout
 config config --local status.showUntrackedFiles no
 
-ansible-galaxy collection install ansible.posix
+ansible-galaxy collection install ansible.posix community.general
 
 ansible-playbook ~/.stringy/ansible/dev-machine.yml
