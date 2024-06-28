@@ -4,7 +4,7 @@
   community.general.flatpak_remote:
     name: flathub
     method: user
-    flatpakrepo_url: flathub https://flathub.org/repo/flathub.flatpakrepo
+    flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
 
 - name: Install flatpaks
   community.general.flatpak:
