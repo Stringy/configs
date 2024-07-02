@@ -6,7 +6,7 @@
       - jq
       - wget
       - golang
-      - kernel-dev
+      - "linux-headers-{{ ansible_kernel }}"
       - cmake
       - clang
       - flatpak
