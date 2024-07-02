@@ -12,15 +12,31 @@
       - flatpak
       - gcc
 
-- name: Download debs
-  get_url:
-    dest: /tmp/deb-files/
-    url: "{{ item }}"
-  loop:
-    - https://github.com/gitify-app/gitify/releases/download/v5.9.0/gitify_5.9.0_amd64.deb
+- block:
+  - set_fact:
+      download_dir: /tmp/deb
 
-- name: Install from file
-  apt:
-    deb: "{{ item }}"
-  loop: "{{ lookup('fileglob', '/tmp/deb-files/*.deb') }}"
+  - name: Make deb directory
+    file:
+      path: "{{ download_dir }}"
+      state: directory
+      mode: '0755'
+
+  - name: Download debs
+    get_url:
+      dest: "{{ download_dir }}/"
+      url: "{{ item }}"
+    loop:
+      - https://github.com/gitify-app/gitify/releases/download/v5.9.0/gitify_5.9.0_amd64.deb
+
+  - name: Install from file
+    apt:
+      deb: "{{ item }}"
+    loop: "{{ lookup('fileglob', download_dir + '/*.deb') }}"
+
+  always:
+    - name: Delete deb directory
+      file:
+        path: "{{ download_dir }}"
+        state: absent
 
