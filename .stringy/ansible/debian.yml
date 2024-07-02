@@ -1,0 +1,26 @@
+
+- name: Install tools
+  apt:
+    name:
+      - make
+      - jq
+      - wget
+      - golang
+      - kernel-dev
+      - cmake
+      - clang
+      - flatpak
+      - gcc
+
+- name: Download debs
+  get_url:
+    dest: /tmp/deb-files/
+    url: "{{ item }}"
+  loop:
+    - https://github.com/gitify-app/gitify/releases/download/v5.9.0/gitify_5.9.0_amd64.deb
+
+- name: Install from file
+  apt:
+    deb: "{{ item }}"
+  loop: "{{ lookup('fileglob', '/tmp/deb-files/*.deb') }}"
+
