@@ -16,15 +16,25 @@
         file: "{{ ansible_facts['os_family'] | lower }}.yml"
         apply:
           become: true
+      tags:
+        - platform
 
     - name: Install neovim
       include_tasks: neovim.yml
+      tags:
+        - neovim
 
     - name: Install fish
       include_tasks: fish.yml
+      tags:
+        - fish
 
     - name: Brew
       include_tasks: brew.yml
+      tags:
+        - brew
 
     - name: Flatpak
       include_tasks: flatpak.yml
+      tags:
+        - flatpak
