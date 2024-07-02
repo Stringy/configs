@@ -32,7 +32,7 @@
   - name: Install from file
     apt:
       deb: "{{ item }}"
-    loop: "{{ lookup('fileglob', download_dir + '/*.deb') }}"
+    loop: "{{ lookup('fileglob', download_dir + '/*.deb', wantlist=True) }}"
 
   always:
     - name: Delete deb directory
