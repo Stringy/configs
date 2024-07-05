@@ -20,12 +20,20 @@
         - platform
 
     - name: Install neovim
-      include_tasks: neovim.yml
+      include_tasks:
+        file: neovim.yml
+        apply:
+          tags:
+            - neovim
       tags:
         - neovim
 
     - name: Install fish
-      include_tasks: fish.yml
+      include_tasks:
+        file: fish.yml
+        apply:
+          tags:
+            - fish
       tags:
         - fish
 
@@ -35,6 +43,9 @@
         - brew
 
     - name: Flatpak
-      include_tasks: flatpak.yml
+      include_tasks:
+        file: flatpak.yml
+        apply:
+          tags: flatpak
       tags:
         - flatpak

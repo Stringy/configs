@@ -5,9 +5,10 @@ local config = wezterm.config_builder()
 local dark_theme = 'Gruvbox Dark'
 local light_theme = 'Gruvbox Light'
 
-config.font = wezterm.font_with_fallback { 'DejaVuSansMono Nerd Font', 'DejaVuSansM Nerd Font Mono' }
-config.font_size = 11.0
+config.font = wezterm.font_with_fallback { 'DejaVuSansM Nerd Font', 'DejaVuSansM Nerd Font Mono' }
+config.font_size = 10.0
 config.color_scheme = light_theme
+config.default_prog = { '/usr/bin/fish', '-l' }
 
 wezterm.on('toggle-colorscheme', function(window, pane)
     local overrides = window:get_config_overrides() or {}
