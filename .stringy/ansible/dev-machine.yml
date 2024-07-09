@@ -9,6 +9,7 @@
         name:
           - rsync
           - tmux
+          - ripgrep
         state: present
       become: true
 
