@@ -40,4 +40,9 @@ config.keys = {
     }
 }
 
+config.window_frame = {
+    font = config.font,
+    font_size = config.font_size,
+}
+
 return config
