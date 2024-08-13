@@ -10,6 +10,7 @@
           - rsync
           - tmux
           - ripgrep
+          - xsel
         state: present
       become: true
 

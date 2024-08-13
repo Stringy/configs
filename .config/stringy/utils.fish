@@ -6,3 +6,5 @@ function complete_in_dir
     cd $prevdir
 end
 
+alias pbcopy='xsel --clipboard --input'
+alias pbpaste='xsel --clipboard --output'
