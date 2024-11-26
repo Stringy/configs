@@ -3,7 +3,7 @@ return {
     config = function()
         require 'nvim-treesitter.configs'.setup {
             -- A list of parser names, or "all"
-            ensure_installed = { "markdown", "c", "lua", "rust", "python", "cpp", "make", "yaml", "zig", "fish" },
+            ensure_installed = { "markdown", "c", "lua", "rust", "python", "cpp", "make", "yaml", "zig", "fish", "javascript" },
 
             -- Install parsers synchronously (only applied to `ensure_installed`)
             sync_install = false,
@@ -31,6 +31,23 @@ return {
         }
 
         require('nvim-treesitter.install').compilers = { 'gcc', 'clang', 'gcc-12' }
+
+        vim.filetype.add({
+            extention = {
+                c3 = "c3",
+                c3i = "c3",
+                c3t = "c3",
+            }
+        })
+
+        local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+        parser_config.c3 = {
+            install_info = {
+                url = "https://github.com/c3lang/tree-sitter-c3",
+                files = {"src/parser.c", "src/scanner.c"},
+                branch = "main",
+            },
+        }
     end,
     lazy = false
 }

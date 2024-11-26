@@ -1,6 +1,6 @@
 local o       = vim.opt
 
-o.shell       = '/bin/bash'
+o.shell       = '/bin/fish'
 o.compatible  = false
 o.showmatch   = true
 o.ignorecase  = true
@@ -37,6 +37,8 @@ o.writebackup = false
 o.background  = "dark"
 -- o.spell = true
 o.guifont     = "Monaspace Xenon"
+o.list        = true
+o.listchars   = "eol:$,tab:>-,trail:~,extends:>,precedes:<,space:."
 
 o.background  = "light"
 vim.cmd([[
@@ -50,4 +52,10 @@ vim.api.nvim_create_autocmd('FileType', {
     group = 'setLineLength',
     pattern = { 'markdown', 'text' },
     command = 'setlocal cc=0 textwidth=79 formatexpr='
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+    group = 'setLineLength',
+    pattern = { 'javascript' },
+    command = 'setlocal cc=0 shiftwidth=2 tabstop=2'
 })

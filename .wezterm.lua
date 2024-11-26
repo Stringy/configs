@@ -1,5 +1,6 @@
 local wezterm = require 'wezterm'
 
+
 local config = wezterm.config_builder()
 
 local dark_theme = 'Gruvbox Dark'

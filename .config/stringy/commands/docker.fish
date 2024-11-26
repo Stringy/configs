@@ -10,6 +10,17 @@ function docker-bash --description "run bash in a given image"
     docker run -it --rm --entrypoint /bin/bash $argv[1]
 end
 
+function docker-bash-priv --description "run bash in a given image"
+    argparse h/help -- $argv
+
+    if set -ql _flag_help
+        echo "docker-bash [-h|--help] <image>"
+        return 0
+    end
+
+    docker run -it --rm --privileged --entrypoint /bin/bash $argv[1]
+end
+
 function docker-sh --description "run bash in a given image"
     argparse h/help -- $argv
 

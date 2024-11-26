@@ -51,7 +51,10 @@ M.common = function()
         'cmake',
         'jedi_language_server',
         'marksman',
-        'csharp_ls'
+        'csharp_ls',
+        'pyright',
+        'ts_ls',
+        'rust_analyzer',
     }) do
         lspconfig[lsp].setup {
             on_attach = M.on_attach,

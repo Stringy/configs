@@ -21,4 +21,9 @@ if test -f $HOME/homebrew/opt/bin/utils
     fish_add_path $HOME/homebrew/opt/bin/utils/bin
 end
 
+fish_add_path $HOME/bin
+fish_add_path $HOME/bin/c3
+
 set -gx LIBRARY_PATH :/opt/homebrew/lib
+
+set -a XDG_DATA_DIRS $HOME/.local/share/flatpak/export/share/applications

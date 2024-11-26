@@ -25,6 +25,12 @@ function _collector_module_version
     popd
 end
 
+function _collector_tag
+    pushd $STACKROX_ROOT/collector
+    make tag
+    popd
+end
+
 function check-collector-drivers --description "look up built drivers"
     argparse m/module-version= -- $argv
 
@@ -98,3 +104,51 @@ function collector-clone --description "clone collector repository into GOPATH"
     end
 end
 
+function collector-standalone --description "run the collector image standalone"
+    set -q COLLECTOR_TAG || set -l COLLECTOR_TAG (_collector_tag)
+
+    set -x COLLECTOR_CONFIG '{"logLevel":"debug"}'
+
+    docker run -it --rm \
+        --privileged \
+        --name collector \
+        --network=host \
+        -v /proc:/host/proc:ro \
+        -v /etc:/host/etc:ro \
+        -v /usr/lib:/host/usr/lib:ro \
+        -v /sys/kernel/debug:/host/sys/kernel/debug:ro \
+        -v /tmp:/tmp \
+        -v /module \
+        -e COLLECTION_METHOD=core-bpf \
+        -e COLLECTOR_CONFIG \
+        "quay.io/stackrox-io/collector:$COLLECTOR_TAG"
+end
+
+function collector-clear-logs --description "clear collector logs"
+    rm -f "$STACKROX_ROOT/collector/integration-tests/container-logs/core-bpf/*"
+end
+
+function rox-teardown
+    kubectl get pv -o json | jq -r '.items[] | select(.spec.claimRef.namespace == "stackrox") | .metadata.name' | IFS='\n' read -d '' -r -a stackrox_pvs
+    kubectl -n stackrox delete --grace-period=0 --force deploy/central deploy/sensor ds/collector deploy/monitoring statefulsets/stackrox-monitoring-alertmanager
+    kubectl -n stackrox get application -o name | xargs kubectl -n stackrox delete --wait
+    # MUST be namespaced, otherwise you delete a lot of stuff
+    kubectl -n stackrox get cm,deploy,ds,hpa,networkpolicy,role,rolebinding,secret,svc,serviceaccount,pvc -o name | xargs kubectl -n stackrox delete --wait
+    # Only delete cluster-wide RBAC/PSP-related resources that contain have the app.kubernetes.io/name=stackrox label.
+    kubectl -n stackrox get clusterrole,clusterrolebinding,psp,validatingwebhookconfiguration -o name -l app.kubernetes.io/name=stackrox | xargs kubectl -n stackrox delete --wait
+
+    if test (count $stackrox_pvs) -ne 0
+        kubectl delete --wait pv $stackrox_pvs
+    end
+
+    if kubectl api-versions | grep -q openshift.io
+        for scc in central monitoring scanner sensor stackrox-central stackrox-monitoring stackrox-scanner stackrox-sensor stackrox-central-db
+            oc delete scc $scc
+        end
+
+        oc delete route central -n stackrox
+        oc delete route central-mtls -n stackrox
+        oc -n kube-system get rolebinding -o name -l app.kubernetes.io/name=stackrox | xargs oc -n kube-system delete --wait
+        oc -n openshift-monitoring get prometheusrule,servicemonitor -o name -l app.kubernetes.io/name=stackrox | xargs oc -n openshift-monitoring delete --wait
+    end
+end

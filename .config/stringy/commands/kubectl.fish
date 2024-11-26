@@ -3,11 +3,11 @@ alias klogs="kubectl logs"
 alias kpods="kubectl get pods"
 alias roxlogs="kubectl -n stackrox logs"
 alias roxpods="kubectl -n stackrox get pods"
-alias krox="kubectl -n stackrox"
+alias rox="kubectl -n stackrox"
 
 set -gx KUBE_EDITOR "nvim"
 
 if type -q "kubectl";
-    kubectl completion fish | source
+    source (kubectl completion fish | psub)
 end
 

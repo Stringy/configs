@@ -21,4 +21,13 @@ alias gst="git status"
 alias gss="git status -s"
 alias gsubu="git submodule update --init"
 alias gsubur="git submodule update --init --recursive"
+alias gd="git diff"
 
+alias gp="git pull"
+alias gpf="git pull --ff-only"
+alias gpu="git push -u origin (git rev-parse --abbrev-ref HEAD)"
+
+alias gr="git rebase"
+alias grc="git rebase --continue"
+alias gra="git rebase --abort"
+alias grm="git rebase (git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')"
