@@ -1,4 +1,5 @@
 
+alias k="kubectl"
 alias klogs="kubectl logs"
 alias kpods="kubectl get pods"
 alias roxlogs="kubectl -n stackrox logs"
