@@ -4,3 +4,4 @@ if status is-interactive
 end
 
 source $HOME/.config/stringy/common.fish
+source $HOME/.config/fish/completions/*.fish

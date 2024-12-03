@@ -187,11 +187,18 @@ bindsym $mod+r mode "resize"
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
-bar {
-        status_command i3status
-        position top
-}
+# bar {
+#         status_command i3status
+#         position top
+# }
+
+bar swaybar_command waybar
 
 exec way-displays > /tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
+
+exec swayidle -w \
+    timeout 1800 '/home/ghutton/.config/stringy/scripts/lock' \
+    timeout 1805 'swaymsg "output * power off"' \
+    resume 'swaymsg "output * power on"'
 
 focus output HDMI-A-1

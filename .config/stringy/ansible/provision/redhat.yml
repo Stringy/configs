@@ -17,6 +17,10 @@
       - containerd.io
       - docker-buildx-plugin
       - docker-compose-plugin
+      - sway
+      - pavucontrol
+      - blueman
+      - rofi
     state: latest
 
 - name: Add authorized key
