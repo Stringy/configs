@@ -27,3 +27,5 @@ source $HOME/.config/stringy/writing.fish
 alias cdme="cd $HOME/code/stringy"
 
 gpgconf --create-socketdir
+
+set -gx GPG_TTY (tty)

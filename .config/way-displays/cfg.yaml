@@ -21,7 +21,7 @@ ORDER:
 
 
 # Enable scaling, overrides AUTO_SCALE and SCALE
-SCALING: TRUE
+SCALING: FALSE
 
 # The default is to scale each display by DPI.
 # This may be disabled and scale 1 will be used, unless a SCALE has been specified.

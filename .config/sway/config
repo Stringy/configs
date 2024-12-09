@@ -200,3 +200,6 @@ exec way-displays > /tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
 focus output HDMI-A-1
 
 mouse_warping none
+
+bindgesture swipe:right workspace prev
+bindgesture swipe:left workspace next
