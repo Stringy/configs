@@ -203,3 +203,10 @@ mouse_warping none
 
 bindgesture swipe:right workspace prev
 bindgesture swipe:left workspace next
+
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+
+exec mako
+
+bindsym --whole-window BTN_TASK seat seat0 cursor press BTN_MIDDLE
+bindsym --release --whole-window BTN_TASK seat seat0 cursor release BTN_MIDDLE
