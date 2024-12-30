@@ -40,12 +40,12 @@ o.guifont     = "Monaspace Xenon"
 o.list        = true
 o.listchars   = "eol:$,tab:>-,trail:~,extends:>,precedes:<,space:."
 
-o.background  = "light"
+o.background  = "dark"
 vim.cmd([[
-colorscheme gruvbox
+colorscheme catppuccin-mocha
 ]])
 
-vim.g.material_style = "lighter"
+vim.g.material_style = "darker"
 
 vim.api.nvim_create_augroup('setLineLength', { clear = true })
 vim.api.nvim_create_autocmd('FileType', {

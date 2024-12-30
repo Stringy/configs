@@ -3,8 +3,8 @@ local wezterm = require 'wezterm'
 
 local config = wezterm.config_builder()
 
-local dark_theme = 'Gruvbox Dark'
-local light_theme = 'Gruvbox Light'
+local dark_theme = 'Catppuccin Mocha'
+local light_theme = 'Catppuccin Latte'
 
 config.font = wezterm.font_with_fallback { 'DejaVuSansM Nerd Font', 'DejaVuSansM Nerd Font Mono' }
 config.font_size = 9.0

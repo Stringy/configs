@@ -216,3 +216,5 @@ bindsym --whole-window BTN_TASK seat seat0 cursor press BTN_MIDDLE
 bindsym --release --whole-window BTN_TASK seat seat0 cursor release BTN_MIDDLE
 
 bindsym $mod+Shift+s exec systemctl suspend
+
+workspace 1 output HDMI-A-1

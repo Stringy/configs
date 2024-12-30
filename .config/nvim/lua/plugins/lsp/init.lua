@@ -40,7 +40,7 @@ return {
                 },
             },
             server = {
-                cmd = { 'rustup', 'run', 'stable', 'rust-analyzer', },
+                cmd = { 'rust-analyzer', },
                 on_attach = common.on_attach,
                 flags = common.lsp_flags,
                 settings = {
