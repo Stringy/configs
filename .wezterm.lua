@@ -8,7 +8,7 @@ local light_theme = 'Catppuccin Latte'
 
 config.font = wezterm.font_with_fallback { 'DejaVuSansM Nerd Font', 'DejaVuSansM Nerd Font Mono' }
 config.font_size = 9.0
-config.color_scheme = light_theme
+config.color_scheme = dark_theme;
 config.default_prog = { '/usr/bin/tmux', '-l' }
 
 wezterm.on('toggle-colorscheme', function(window, pane)

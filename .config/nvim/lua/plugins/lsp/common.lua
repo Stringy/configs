@@ -86,6 +86,15 @@ M.common = function()
             },
         },
     }
+
+    lspconfig.gopls.setup {
+        on_attach = M.on_attach,
+        flags = M.lsp_flags,
+        capabilities = M.capabilities(),
+        gopls = {
+            buildFlags = { "-tags=sql_integration" },
+        }
+    }
 end
 
 return M

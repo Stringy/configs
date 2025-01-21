@@ -65,7 +65,7 @@ return {
                     'nvim-tree',
                 }
             })
-            require('material.functions').change_style('lighter')
+            require('material.functions').change_style('darker')
         end
     },
 

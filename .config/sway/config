@@ -218,3 +218,5 @@ bindsym --release --whole-window BTN_TASK seat seat0 cursor release BTN_MIDDLE
 bindsym $mod+Shift+s exec systemctl suspend
 
 workspace 1 output HDMI-A-1
+
+bindsym $mod+p exec grim -g "$(slurp)" - | cp /dev/stdin "$HOME/Pictures/screenshot-$(date +%d-%m-%Y-%H-%M-%S).png"
