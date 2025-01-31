@@ -1,0 +1,35 @@
+#!/bin/sh
+
+BLANK='#00000000'
+CLEAR='#ffffff22'
+DEFAULT='#00897bE6'
+TEXT='#00897bE6'
+WRONG='#880000bb'
+VERIFYING='#00564dE6'
+
+swaylock \
+--inside-ver-color=$CLEAR     \
+--ring-ver-color=$VERIFYING   \
+\
+--inside-wrong-color=$CLEAR   \
+--ring-wrong-color=$WRONG     \
+\
+--inside-color=$BLANK        \
+--ring-color=$DEFAULT        \
+--line-color=$BLANK          \
+--separator-color=$DEFAULT   \
+\
+--layout-text-color=$TEXT         \
+--key-hl-color=$WRONG         \
+\
+--clock                      \
+--indicator                  \
+--timestr="%H:%M:%S"        \
+--datestr="%A, %Y-%m-%d"
+# --keylayout 1                \
+
+#--verif-color=$TEXT          \
+#--wrong-color=$TEXT          \
+#--time-color=$TEXT           \
+#--date-color=$TEXT           \
+# --blur 9                     \

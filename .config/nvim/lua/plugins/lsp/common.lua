@@ -55,6 +55,7 @@ M.common = function()
         'pyright',
         'ts_ls',
         'rust_analyzer',
+        'groovyls',
     }) do
         lspconfig[lsp].setup {
             on_attach = M.on_attach,
@@ -91,8 +92,10 @@ M.common = function()
         on_attach = M.on_attach,
         flags = M.lsp_flags,
         capabilities = M.capabilities(),
-        gopls = {
-            buildFlags = { "-tags=sql_integration" },
+        settings = {
+            gopls = {
+                buildFlags = { "-tags=sql_integration" },
+            }
         }
     }
 end
