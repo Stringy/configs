@@ -25,6 +25,7 @@ source $HOME/.config/stringy/vms.fish
 source $HOME/.config/stringy/writing.fish
 
 alias cdme="cd $HOME/code/stringy"
+alias cdg="cd $HOME/code/go/src/github.com"
 
 gpgconf --create-socketdir
 

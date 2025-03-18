@@ -152,3 +152,9 @@ function rox-teardown
         oc -n openshift-monitoring get prometheusrule,servicemonitor -o name -l app.kubernetes.io/name=stackrox | xargs oc -n openshift-monitoring delete --wait
     end
 end
+
+function rox-setup-release
+    set -gx RELEASE (read -p 'echo "Which release? (e.g. 4.7): "')
+    set -gx PREVIOUS_RELEASE (read -p 'echo "Which previous release? (e.g. 4.6): "')
+    set -gx SHIP_DATE (read -p 'echo "When? (YYYY-MM-DD): "')
+end
