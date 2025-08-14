@@ -9,6 +9,7 @@ fish_add_path $HOME/etc/google-cloud-sdk/bin
 fish_add_path $HOME/.dotnet/tools
 fish_add_path /home/linuxbrew/.linuxbrew/bin
 fish_add_path $HOME/.local/bin
+fish_add_path /usr/local/go/bin
 
 if test -f $HOME/etc/nvim-osx64
     fish_add_path $HOME/ext/nvim-osx64/bin

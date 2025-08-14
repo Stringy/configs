@@ -36,6 +36,10 @@ function infra-switch --description "Switch kubeconfig to a given cluster"
     set -gx KUBECONFIG "$config"
 end
 
+function infra-new --description "Create a new infra cluster"
+    infractl create openshift-4 --lifespan 8h
+end
+
 complete -x --command infra-dl --arguments "(infractl list -q | awk '{\$1=\$1;print}')"
 complete -x --command infra-clr --arguments "(infractl list -q | awk '{\$1=\$1;print}')"
 complete -x --command infra-clr --arguments "(complete_in_dir $INFRA_ROOT_DIR)"
@@ -45,3 +49,5 @@ alias idl=infra-dl
 alias iclr=infra-clr
 alias is=infra-switch
 alias infra="kubectl config get-clusters"
+alias ils="infractl list"
+alias inew=infra-new

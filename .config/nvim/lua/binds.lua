@@ -10,7 +10,7 @@ nest.applyKeymaps {
     {
         '<leader>', {
         { 'd',  ':NvimTreeToggle<CR>' },
-        { 'dd',  ':put =strftime(\'%c\')<CR>' },
+        { 'dd', ':put =strftime(\'%c\')<CR>' },
         { 'z',  ':ZenMode<CR>' },
         { 'ff', ':Telescope find_files<CR>' },
         { 'fg', ':Telescope live_grep<CR>' },
@@ -34,6 +34,9 @@ nest.applyKeymaps {
 
         { 'nn', require('stringy.trimmers').newlines },
         { 't',  require('stringy.misc').toggle_theme },
+
+        { 'ai', ':CodeCompanionActions<CR>' },
+        { 'ac', ':CodeCompanionChat<CR>' },
     }
     }
 }
@@ -44,3 +47,9 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     group = stringy,
     callback = require('stringy.trimmers').whitespace,
 })
+
+vim.api.nvim_create_user_command('Cga', function(opts)
+    require('codecompanion').last_chat().References:add({
+
+    })
+end, { nargs = 1 })

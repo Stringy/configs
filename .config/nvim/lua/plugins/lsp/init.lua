@@ -1,4 +1,4 @@
-local common = require('plugins.lsp.common')
+local common = require('plugins.common.lsp')
 
 return {
     {
@@ -34,13 +34,14 @@ return {
                 -- rust-tools options
                 autoSetHints = true,
                 inlay_hints = {
-                    show_parameter_hints = false,
+                    auto = true,
+                    show_parameter_hints = true,
                     parameter_hints_prefix = "",
                     other_hints_prefix = "",
                 },
             },
             server = {
-                cmd = { 'rust-analyzer', },
+                cmd = { 'rust-analyzer' },
                 on_attach = common.on_attach,
                 flags = common.lsp_flags,
                 settings = {
@@ -50,6 +51,9 @@ return {
                         -- enable clippy on save
                         checkOnSave = {
                             command = 'clippy'
+                        },
+                        diagnostics = {
+                            enable = true,
                         },
                     }
                 }

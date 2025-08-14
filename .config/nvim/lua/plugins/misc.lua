@@ -86,7 +86,39 @@ return {
         version = '*',
         lazy = false,
         config = function()
-            require('nvim-tree').setup()
+            require('nvim-tree').setup({
+                on_attach = function(bufnr)
+                    local api = require("nvim-tree.api")
+
+                    -- Attach default mappings
+                    api.config.mappings.default_on_attach(bufnr)
+
+                    vim.keymap.set('n', '.', function()
+                        local node = api.tree.get_node_under_cursor()
+                        local path = node.absolute_path
+                        local codecompanion = require("codecompanion")
+                        local chat = codecompanion.last_chat()
+                        --if no chat, create one
+                        if (chat == nil) then
+                            chat = codecompanion.chat()
+                        end
+                        -- if already added, ignore
+                        for _, ref in ipairs(chat.refs) do
+                            if ref.path == path then
+                                return print("Already added")
+                            end
+                        end
+                        chat.references:add({
+                            id = '<file>' .. path .. '</file>',
+                            path = path,
+                            source = "codecompanion.strategies.chat.slash_commands.file",
+                            opts = {
+                                pinned = true
+                            }
+                        })
+                    end, { buffer = bufnr, desc = "Add or Pin file to Chat" })
+                end
+            })
         end
     },
 
@@ -107,36 +139,36 @@ return {
         'folke/trouble.nvim',
         opts = {},
         cmd = "Trouble",
-          keys = {
+        keys = {
             {
-              "<leader>xx",
-              "<cmd>Trouble diagnostics toggle<cr>",
-              desc = "Diagnostics (Trouble)",
+                "<leader>xx",
+                "<cmd>Trouble diagnostics toggle<cr>",
+                desc = "Diagnostics (Trouble)",
             },
             {
-              "<leader>xX",
-              "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-              desc = "Buffer Diagnostics (Trouble)",
+                "<leader>xX",
+                "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+                desc = "Buffer Diagnostics (Trouble)",
             },
             {
-              "<leader>cs",
-              "<cmd>Trouble symbols toggle focus=false<cr>",
-              desc = "Symbols (Trouble)",
+                "<leader>cs",
+                "<cmd>Trouble symbols toggle focus=false<cr>",
+                desc = "Symbols (Trouble)",
             },
             {
-              "<leader>cl",
-              "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-              desc = "LSP Definitions / references / ... (Trouble)",
+                "<leader>cl",
+                "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+                desc = "LSP Definitions / references / ... (Trouble)",
             },
             {
-              "<leader>xL",
-              "<cmd>Trouble loclist toggle<cr>",
-              desc = "Location List (Trouble)",
+                "<leader>xL",
+                "<cmd>Trouble loclist toggle<cr>",
+                desc = "Location List (Trouble)",
             },
             {
-              "<leader>xQ",
-              "<cmd>Trouble qflist toggle<cr>",
-              desc = "Quickfix List (Trouble)",
+                "<leader>xQ",
+                "<cmd>Trouble qflist toggle<cr>",
+                desc = "Quickfix List (Trouble)",
             },
         },
     }

@@ -13,7 +13,12 @@ end
 
 vim.opt.rtp:prepend(lazy_path)
 
-require('lazy').setup("plugins")
+require('lazy').setup({
+    spec = {
+        { import = "plugins", },
+        { import = "plugins.lsp", },
+    },
+})
 
 require('binds')
 require('options')

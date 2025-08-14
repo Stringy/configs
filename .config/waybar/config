@@ -20,6 +20,11 @@
             "deactivated": ""
         },
     },
+    "custom/pomodoro": {
+        "exec": "~/code/go/bin/pomo status",
+        "exec-if": "exit 0",
+        "interval": 5,
+    },
     "tray": {
         "icon-size": 15,
         "spacing": 10

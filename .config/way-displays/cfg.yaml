@@ -17,7 +17,7 @@ ALIGN: TOP
 ORDER:
   - 'HDMI-A-1'
   - 'DP-2'
-  #- 'HDMI-1'
+  # - 'HDMI-1'
 
 
 # Enable scaling, overrides AUTO_SCALE and SCALE

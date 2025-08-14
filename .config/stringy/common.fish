@@ -24,9 +24,10 @@ source $HOME/.config/stringy/fish/plugins.fish
 source $HOME/.config/stringy/vms.fish
 source $HOME/.config/stringy/writing.fish
 
-alias cdme="cd $HOME/code/stringy"
+alias cdme="cd $HOME/code/go/src/github.com/stringy"
 alias cdg="cd $HOME/code/go/src/github.com"
 
 gpgconf --create-socketdir
 
 set -gx GPG_TTY (tty)
+set -gx EDITOR helix
