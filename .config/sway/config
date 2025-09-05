@@ -41,6 +41,8 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+bindsym --locked XF86MonBrightnessUp exec brightnessctl s +5%
+bindsym --locked XF86MonBrightnessDown exec brightnessctl s 5%-
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -220,3 +222,9 @@ bindsym $mod+Shift+s exec systemctl suspend
 workspace 1 output HDMI-A-1
 
 bindsym $mod+p exec grim -g "$(slurp)" - | cp /dev/stdin "$HOME/Pictures/screenshot-$(date +%d-%m-%Y-%H-%M-%S).png"
+
+input type:touchpad {
+    dwt enabled
+    tap enabled
+    tap_button_map lrm
+}
