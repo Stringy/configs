@@ -44,8 +44,7 @@ end
 
 M.common = function()
     local lspconfig = require('lspconfig')
-
-    for _, lsp in ipairs({
+    local lsps = {
         'clangd',
         'gopls',
         'cmake',
@@ -56,15 +55,18 @@ M.common = function()
         'ts_ls',
         'rust_analyzer',
         'groovyls',
-    }) do
-        lspconfig[lsp].setup {
+    }
+
+    for _, lsp in ipairs(lsps) do
+        vim.lsp.config(lsp, {
             on_attach = M.on_attach,
             flags = M.lsp_flags,
             capabilities = M.capabilities()
-        }
+        })
     end
+    vim.lsp.enable(lsps)
 
-    lspconfig.lua_ls.setup {
+    vim.lsp.config('lua_lsp', {
         on_attach = M.on_attach,
         settings = {
             Lua = {
@@ -86,9 +88,9 @@ M.common = function()
                 },
             },
         },
-    }
+    })
 
-    lspconfig.gopls.setup {
+    vim.lsp.config('gopls', {
         on_attach = M.on_attach,
         flags = M.lsp_flags,
         capabilities = M.capabilities(),
@@ -97,7 +99,9 @@ M.common = function()
                 buildFlags = { "-tags=sql_integration" },
             }
         }
-    }
+    })
+
+    vim.lsp.enable({ 'gopls', 'lua_lsp' })
 end
 
 return M

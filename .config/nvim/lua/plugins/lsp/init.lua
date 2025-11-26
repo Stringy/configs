@@ -21,45 +21,50 @@ return {
             common.common()
         end
     },
-
     {
-        'simrat39/rust-tools.nvim',
-        ft = 'rust',
-        dependencies = {
-            'hrsh7th/cmp-nvim-lsp',
-        },
-        lazy = false,
-        opts = {
-            tools = {
-                -- rust-tools options
-                autoSetHints = true,
-                inlay_hints = {
-                    auto = true,
-                    show_parameter_hints = true,
-                    parameter_hints_prefix = "",
-                    other_hints_prefix = "",
-                },
-            },
-            server = {
-                cmd = { 'rust-analyzer' },
-                on_attach = common.on_attach,
-                flags = common.lsp_flags,
-                settings = {
-                    -- to enable rust-analyzer settings visit
-                    -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
-                    ['rust-analyzer'] = {
-                        -- enable clippy on save
-                        checkOnSave = {
-                            command = 'clippy'
-                        },
-                        diagnostics = {
-                            enable = true,
-                        },
-                    }
-                }
-            },
-        }
+          'mrcjkb/rustaceanvim',
+          version = '^6',
+          lazy = false,
     },
+
+--    {
+--        'simrat39/rust-tools.nvim',
+--        ft = 'rust',
+--        dependencies = {
+--            'hrsh7th/cmp-nvim-lsp',
+--        },
+--        lazy = false,
+--        opts = {
+--            tools = {
+--                -- rust-tools options
+--                autoSetHints = true,
+--                inlay_hints = {
+--                    auto = true,
+--                    show_parameter_hints = true,
+--                    parameter_hints_prefix = "",
+--                    other_hints_prefix = "",
+--                },
+--            },
+--            server = {
+--                cmd = { 'rust-analyzer' },
+--                on_attach = common.on_attach,
+--                flags = common.lsp_flags,
+--                settings = {
+--                    -- to enable rust-analyzer settings visit
+--                    -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
+--                    ['rust-analyzer'] = {
+--                        -- enable clippy on save
+--                        checkOnSave = {
+--                            command = 'clippy'
+--                        },
+--                        diagnostics = {
+--                            enable = true,
+--                        },
+--                    }
+--                }
+--            },
+--        }
+--    },
 
     {
         'williamboman/nvim-lsp-installer',
@@ -116,7 +121,7 @@ return {
                     -- diagnostics
                     null_ls.builtins.diagnostics.actionlint,
                     null_ls.builtins.diagnostics.ansiblelint,
-                    null_ls.builtins.diagnostics.flake8,
+                    -- null_ls.builtins.diagnostics.flake8,
                     null_ls.builtins.diagnostics.hadolint,
                     null_ls.builtins.diagnostics.zsh,
                     null_ls.builtins.diagnostics.checkmake,
@@ -124,7 +129,7 @@ return {
                     null_ls.builtins.diagnostics.fish,
 
                     -- formatters
-                    null_ls.builtins.formatting.autopep8,
+                    -- null_ls.builtins.formatting.autopep8,
                     null_ls.builtins.formatting.shfmt,
 
                     -- prose

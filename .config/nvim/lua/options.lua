@@ -34,18 +34,17 @@ o.splitright  = true
 o.swapfile    = false
 o.wrap        = false
 o.writebackup = false
-o.background  = "dark"
 -- o.spell = true
 o.guifont     = "Monaspace Xenon"
 o.list        = true
 o.listchars   = "eol:$,tab:>-,trail:~,extends:>,precedes:<,space:."
 
-o.background  = "dark"
+o.background  = "light"
 vim.cmd([[
-colorscheme catppuccin-mocha
+colorscheme gruvbox
 ]])
 
-vim.g.material_style = "darker"
+-- vim.g.material_style = "lighter"
 
 vim.api.nvim_create_augroup('setLineLength', { clear = true })
 vim.api.nvim_create_autocmd('FileType', {
