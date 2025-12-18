@@ -31,4 +31,4 @@ alias cdg="cd $HOME/code/go/src/github.com"
 gpgconf --create-socketdir
 
 set -gx GPG_TTY (tty)
-set -gx EDITOR helix
+set -gx EDITOR nvim
