@@ -5,6 +5,7 @@ alias vim="nvim"
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 alias editstringy="nvim $HOME/.config/stringy"
 alias hm="history --merge"
+alias fenv="env | awk -F= '{ printf \"%s\n    %s\n\",\$1,\$2}'"
 
 source $HOME/.config/stringy/binds.fish
 
