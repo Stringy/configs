@@ -97,7 +97,7 @@ M.common = function()
         capabilities = M.capabilities(),
         settings = {
             gopls = {
-                buildFlags = { "-tags=sql_integration" },
+                buildFlags = { "-tags=sql_integration,test_e2e" },
             }
         }
     })

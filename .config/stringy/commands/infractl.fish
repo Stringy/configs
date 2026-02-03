@@ -20,7 +20,7 @@ function infra-clr --description "Remove a cluster configuration or all configur
         rm -rf "$INFRA_ROOT_DIR/$argv[1]"
     else
         echo "[*] deleting all infra entries"
-        find $INFRA_ROOT_DIR -mindepth 1 -type d \! -name useful -print -exec rm -r {} \; 2>/dev/null
+        find $INFRA_ROOT_DIR -mindepth 1 -type d -name 'gdth-*' -print -exec rm -r {} \; 2>/dev/null
     end
 end
 
