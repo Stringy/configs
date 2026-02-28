@@ -159,3 +159,4 @@ When helping me:
 - **Deduplicate** rather than add redundant code/tests
 - **Investigate thoroughly** when I report errors
 - **Keep it simple** - don't over-engineer
+- **Why is more important than what** - don't over comment on code

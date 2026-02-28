@@ -16,7 +16,12 @@ return {
     'tpope/vim-fugitive',
     'tpope/vim-surround',
     'lukas-reineke/indent-blankline.nvim',
-    'lukas-reineke/lsp-format.nvim',
+    {
+        'lukas-reineke/lsp-format.nvim',
+        config = function()
+            require("lsp-format").setup({})
+        end
+    },
     {
         "iamcco/markdown-preview.nvim",
         build = function() vim.fn["mkdp#util#install"]() end,
@@ -65,7 +70,7 @@ return {
                     'nvim-tree',
                 }
             })
-            require('material.functions').change_style('lighter')
+            require('material.functions').change_style('darker')
         end
     },
 

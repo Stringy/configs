@@ -23,8 +23,31 @@ return {
     },
     {
           'mrcjkb/rustaceanvim',
-          version = '^6',
+          version = '^8',
           lazy = false,
+          init = function()
+              vim.g.rustaceanvim = {
+                  server = {
+                      on_attach = common.on_attach,
+                      settings = {
+                          ['rust-analyzer'] = {
+                              checkOnSave = true,
+                              check = {
+                                  command = 'clippy',
+                              },
+                              diagnostics = {
+                                  enable = true,
+                              },
+                              inlayHints = {
+                                  chainingHints = { enable = true },
+                                  typeHints = { enable = true },
+                                  parameterHints = { enable = true },
+                              },
+                          },
+                      },
+                  },
+              }
+          end,
     },
 
 --    {
@@ -90,11 +113,13 @@ return {
                     { name = 'vsnip' },
                 }),
 
-                mapping = {
+                mapping = cmp.mapping.preset.insert({
                     ['<C-Space>'] = cmp.mapping.complete(),
                     ['<C-e>'] = cmp.mapping.close(),
-                    ['<CR>'] = cmp.mapping.confirm({ select = true })
-                }
+                    ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i', 'c'}),
+                    ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i', 'c'}),
+                    ['<CR>'] = cmp.mapping.confirm({select=true}),
+                })
             }
         end,
         dependencies = {
