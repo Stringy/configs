@@ -7,8 +7,6 @@ return {
         end
     },
 
-    'habamax/vim-godot',
-
     {
         'romgrk/barbar.nvim',
         dependencies = { 'nvim-tree/nvim-web-devicons' }
@@ -39,13 +37,6 @@ return {
         },
     },
 
-    'simrat39/symbols-outline.nvim',
-    {
-        'junegunn/goyo.vim',
-        keys = {
-            '<leader>fo'
-        }
-    },
 
     {
         'catppuccin/nvim',
@@ -70,7 +61,7 @@ return {
                     'nvim-tree',
                 }
             })
-            require('material.functions').change_style('darker')
+            require('material.functions').change_style('lighter')
         end
     },
 
@@ -176,9 +167,6 @@ return {
                 desc = "Quickfix List (Trouble)",
             },
         },
-    },
-    {
-        "rust-lang/rust.vim",
     },
     {
         "mfussenegger/nvim-dap",

@@ -39,7 +39,7 @@ o.guifont     = "Monaspace Xenon"
 o.list        = true
 o.listchars   = "eol:$,tab:>-,trail:~,extends:>,precedes:<,space:."
 
-o.background  = "dark"
+o.background  = "light"
 vim.cmd([[
 colorscheme gruvbox
 ]])

@@ -19,7 +19,7 @@ vim.diagnostic.config({
 M.on_attach = function(client, bufnr)
     require("lsp-format").on_attach(client)
     -- Enable completion triggered by <c-x><c-o>
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
     -- Enable inlay hints if supported
     if client.supports_method("textDocument/inlayHint") then
@@ -52,7 +52,7 @@ M.lsp_flags = {
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 M.capabilities = function()
-    require('cmp_nvim_lsp').default_capabilities(capabilities)
+    return require('cmp_nvim_lsp').default_capabilities(capabilities)
 end
 
 M.common = function()

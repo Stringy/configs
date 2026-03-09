@@ -3,7 +3,7 @@ return {
     config = function()
         require 'nvim-treesitter.configs'.setup {
             -- A list of parser names, or "all"
-            ensure_installed = { "markdown", "c", "lua", "rust", "python", "cpp", "make", "yaml", "zig", "fish", "javascript" },
+            ensure_installed = { "markdown", "c", "lua", "rust", "python", "cpp", "make", "yaml", "zig", "fish", "go", "gomod" },
 
             -- Install parsers synchronously (only applied to `ensure_installed`)
             sync_install = false,
@@ -12,7 +12,7 @@ return {
             auto_install = true,
 
             -- List of parsers to ignore installing (for "all")
-            ignore_install = { "javascript" },
+            ignore_install = {},
 
             highlight = {
                 -- `false` will disable the whole extension
@@ -33,7 +33,7 @@ return {
         require('nvim-treesitter.install').compilers = { 'gcc', 'clang', 'gcc-12' }
 
         vim.filetype.add({
-            extention = {
+            extension = {
                 c3 = "c3",
                 c3i = "c3",
                 c3t = "c3",

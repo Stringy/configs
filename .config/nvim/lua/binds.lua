@@ -18,8 +18,6 @@ nest.applyKeymaps {
         { 'fh', ':Telescope help_tags<CR>' },
         { 'fs', ':Telescope grep_string<CR>' },
         { 'fd', require('telescope.builtin').diagnostics },
-        { 'ss', ':SymbolsOutline<CR>' },
-        { 'fo', ':Goyo<CR>' },
         -- tab controls
         { '1',  '1gt' },
         { '2',  '2gt' },
@@ -48,8 +46,3 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     callback = require('stringy.trimmers').whitespace,
 })
 
-vim.api.nvim_create_user_command('Cga', function(opts)
-    require('codecompanion').last_chat().References:add({
-
-    })
-end, { nargs = 1 })

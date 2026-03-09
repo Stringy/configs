@@ -25,6 +25,7 @@ return {
           'mrcjkb/rustaceanvim',
           version = '^8',
           lazy = false,
+          dependencies = { 'lukas-reineke/lsp-format.nvim' },
           init = function()
               vim.g.rustaceanvim = {
                   server = {
@@ -48,50 +49,6 @@ return {
                   },
               }
           end,
-    },
-
---    {
---        'simrat39/rust-tools.nvim',
---        ft = 'rust',
---        dependencies = {
---            'hrsh7th/cmp-nvim-lsp',
---        },
---        lazy = false,
---        opts = {
---            tools = {
---                -- rust-tools options
---                autoSetHints = true,
---                inlay_hints = {
---                    auto = true,
---                    show_parameter_hints = true,
---                    parameter_hints_prefix = "",
---                    other_hints_prefix = "",
---                },
---            },
---            server = {
---                cmd = { 'rust-analyzer' },
---                on_attach = common.on_attach,
---                flags = common.lsp_flags,
---                settings = {
---                    -- to enable rust-analyzer settings visit
---                    -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
---                    ['rust-analyzer'] = {
---                        -- enable clippy on save
---                        checkOnSave = {
---                            command = 'clippy'
---                        },
---                        diagnostics = {
---                            enable = true,
---                        },
---                    }
---                }
---            },
---        }
---    },
-
-    {
-        'williamboman/nvim-lsp-installer',
-        lazy = false,
     },
 
     {
