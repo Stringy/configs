@@ -150,6 +150,11 @@ When working on detection/policy features, reference these files:
 - "Add test cases for [feature]" - Test coverage improvements
 - "Follow the existing patterns in [file]" - Consistency is important
 
+## Language Preferences
+
+- **Conversation**: Use British English when speaking to me (e.g. "behaviour", "colour", "optimise", "analyse")
+- **Code and code-adjacent files** (comments, commit messages, documentation, skill files): Use American English, except in repositories under `~/code/go/src/github.com/stringy/` where British English is fine
+
 ## Reminder for Claude
 
 When helping me:
@@ -179,3 +184,5 @@ strings, config values) where LSP doesn't help.
 
 After writing or editing code, check LSP diagnostics before
 moving on. Fix any type errors or missing imports immediately.
+
+@RTK.md
