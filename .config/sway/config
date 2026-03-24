@@ -140,12 +140,15 @@ bindgesture swipe:left workspace next
 bindsym --whole-window BTN_TASK seat seat0 cursor press BTN_MIDDLE
 bindsym --release --whole-window BTN_TASK seat seat0 cursor release BTN_MIDDLE
 
+# KVM switch to desktop (DisplayPort)
+bindsym $mod+Shift+d exec ddcutil setvcp 60 0x0f --display 1
+
 bindsym $mod+Shift+Escape exec gtklock -d
 bindsym $mod+Shift+s exec gtklock -d && systemctl suspend
 
 exec swayidle -w \
-    timeout 300 'gtklock -d' \
-    timeout 600 'swaymsg "output * power off"' \
+    timeout 900 'gtklock -d' \
+    timeout 1800 'swaymsg "output * power off"' \
     resume 'swaymsg "output * power on"' \
     before-sleep 'gtklock -d'
 bindsym $mod+p exec grim -g "$(slurp)" - | cp /dev/stdin "$HOME/Pictures/screenshot-$(date +%Y-%m-%d)-$(date +%H-%M-%S | md5sum | awk '{print substr($1, 0, 8)}').png"
