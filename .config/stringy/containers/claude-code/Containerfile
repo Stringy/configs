@@ -1,0 +1,66 @@
+FROM registry.fedoraproject.org/fedora:41
+
+ARG CLAUDE_CODE_VERSION=latest
+ARG GO_VERSION=1.23.6
+ARG USERNAME=claude
+ARG VERTEX_PROJECT_ID=itpc-gcp-hcm-pe-eng-claude
+ARG VERTEX_REGION=us-east5
+
+# Install system dependencies
+RUN dnf install -y \
+        git \
+        curl \
+        wget \
+        unzip \
+        findutils \
+        procps-ng \
+        nodejs \
+        npm \
+        gcc \
+        gcc-c++ \
+        make \
+        openssl-devel \
+        python3 \
+        python3-pip \
+        ripgrep \
+        jq \
+        which \
+        fish \
+    && dnf clean all
+
+# Install Go
+RUN curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" \
+    | tar -C /usr/local -xzf -
+
+# Install Rust via rustup (system-wide for all users)
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+    | sh -s -- -y --default-toolchain stable --no-modify-path
+ENV PATH="/usr/local/cargo/bin:/usr/local/go/bin:${PATH}"
+
+# Install gcloud CLI
+RUN curl -fsSL https://sdk.cloud.google.com > /tmp/install-gcloud.sh \
+    && bash /tmp/install-gcloud.sh --disable-prompts --install-dir=/usr/local \
+    && rm /tmp/install-gcloud.sh
+ENV PATH="/usr/local/google-cloud-sdk/bin:${PATH}"
+
+# Install Claude Code
+RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
+
+# Create non-root user
+RUN useradd -m -s /usr/bin/fish ${USERNAME}
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+
+# Set up Go workspace
+ENV GOPATH="/home/${USERNAME}/go"
+ENV PATH="${GOPATH}/bin:${PATH}"
+RUN mkdir -p "${GOPATH}/src" "${GOPATH}/bin" "${GOPATH}/pkg"
+
+# Configure Claude Code for Vertex AI
+ENV CLAUDE_CODE_USE_VERTEX=1 \
+    CLOUD_ML_REGION=${VERTEX_REGION} \
+    ANTHROPIC_VERTEX_PROJECT_ID=${VERTEX_PROJECT_ID}
+
+ENTRYPOINT ["claude"]

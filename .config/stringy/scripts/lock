@@ -25,11 +25,5 @@ swaylock \
 --clock                      \
 --indicator                  \
 --timestr="%H:%M:%S"        \
---datestr="%A, %Y-%m-%d"
-# --keylayout 1                \
-
-#--verif-color=$TEXT          \
-#--wrong-color=$TEXT          \
-#--time-color=$TEXT           \
-#--date-color=$TEXT           \
-# --blur 9                     \
+--datestr="%A, %Y-%m-%d"    \
+--effect-blur 7x5
