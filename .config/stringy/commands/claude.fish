@@ -23,19 +23,6 @@ end
 
 # --- Internal helpers ---
 
-function __claude_repo_root --description "Get git repo root or fail"
-    set -l root (git rev-parse --show-toplevel 2>/dev/null)
-    or begin
-        echo "Error: not in a git repository" >&2
-        return 1
-    end
-    echo $root
-end
-
-function __claude_main_branch --description "Get the main branch name"
-    git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@'
-end
-
 function __claude_worktrees --description "List Claude worktree paths in the given repo root"
     set -l repo_root $argv[1]
     git -C $repo_root worktree list --porcelain \
@@ -74,10 +61,6 @@ function __claude_find_worktree --description "Find an existing worktree by tick
         end
     end
     return 1
-end
-
-function __claude_dirty_count --description "Count uncommitted changes in a worktree"
-    count (git -C $argv[1] status --porcelain 2>/dev/null)
 end
 
 function __claude_worktree_completions --description "List worktree names for tab completion"
@@ -126,7 +109,7 @@ function claude-switch --description "Create or resume a Claude worktree session
     if set -ql _flag_r
         set repo_root $_flag_r
     else
-        set repo_root (__claude_repo_root)
+        set repo_root (git_repo_root)
         or return 1
     end
 
@@ -135,6 +118,7 @@ function claude-switch --description "Create or resume a Claude worktree session
     set -l existing_wt (__claude_find_worktree $ticket)
     if test -n "$existing_wt"
         echo "Resuming session in existing worktree: $existing_wt"
+        tmux_title (basename $repo_root) (basename $existing_wt)
         cd $existing_wt
         if set -ql _flag_p
             claude --continue "$_flag_p"
@@ -179,6 +163,7 @@ function claude-switch --description "Create or resume a Claude worktree session
     end
 
     cd $wt_path
+    tmux_title (basename $repo_root) $wt_name
 
     set -l initial_prompt "I'm working on $ticket: $title. The Jira ticket description and context has been loaded. Let's get started."
     if set -ql _flag_p
@@ -190,7 +175,7 @@ function claude-switch --description "Create or resume a Claude worktree session
 end
 
 function claude-resume --description "Resume a Claude session in a worktree (interactive picker)"
-    set -l repo_root (__claude_repo_root)
+    set -l repo_root (git_repo_root)
     or return 1
 
     set -l worktrees (__claude_worktrees $repo_root)
@@ -222,15 +207,16 @@ function claude-resume --description "Resume a Claude session in a worktree (int
         return 1
     end
 
+    tmux_title (basename $repo_root) $pick
     cd $repo_root/.claude/worktrees/$pick
     claude --continue
 end
 
 function claude-list --description "List all Claude worktrees (quick overview)"
-    set -l repo_root (__claude_repo_root)
+    set -l repo_root (git_repo_root)
     or return 1
 
-    set -l main (__claude_main_branch)
+    set -l main (git_main_branch)
     set -l worktrees (__claude_worktrees $repo_root)
 
     if test (count $worktrees) -eq 0
@@ -245,7 +231,7 @@ function claude-list --description "List all Claude worktrees (quick overview)"
         set -l name (basename $wt)
         set -l branch (git -C $wt rev-parse --abbrev-ref HEAD 2>/dev/null)
         set -l ahead (git -C $wt rev-list --count origin/$main..HEAD 2>/dev/null; or echo "?")
-        set -l dirty (__claude_dirty_count $wt)
+        set -l dirty (git_dirty_count $wt)
         set -l marker ""
         test $dirty -gt 0; and set marker " [modified]"
 
@@ -259,7 +245,7 @@ function claude-clean --description "Remove a Claude worktree"
         return 1
     end
 
-    set -l repo_root (__claude_repo_root)
+    set -l repo_root (git_repo_root)
     or return 1
 
     set -l target $argv[1]
@@ -300,10 +286,10 @@ function claude-clean --description "Remove a Claude worktree"
 end
 
 function claude-status --description "Show git status across all Claude worktrees"
-    set -l repo_root (__claude_repo_root)
+    set -l repo_root (git_repo_root)
     or return 1
 
-    set -l main (__claude_main_branch)
+    set -l main (git_main_branch)
     set -l worktrees (__claude_worktrees $repo_root)
 
     if test (count $worktrees) -eq 0
@@ -319,7 +305,7 @@ function claude-status --description "Show git status across all Claude worktree
         set -l branch (git -C $wt rev-parse --abbrev-ref HEAD 2>/dev/null)
         set -l ahead (git -C $wt rev-list --count origin/$main..HEAD 2>/dev/null; or echo "?")
         set -l behind (git -C $wt rev-list --count HEAD..origin/$main 2>/dev/null; or echo "?")
-        set -l dirty (__claude_dirty_count $wt)
+        set -l dirty (git_dirty_count $wt)
         set -l last_commit (git -C $wt log -1 --format='%cr: %s' 2>/dev/null)
 
         set_color cyan
@@ -347,10 +333,10 @@ function claude-status --description "Show git status across all Claude worktree
 end
 
 function claude-sync --description "Rebase all Claude worktrees onto latest main"
-    set -l repo_root (__claude_repo_root)
+    set -l repo_root (git_repo_root)
     or return 1
 
-    set -l main (__claude_main_branch)
+    set -l main (git_main_branch)
 
     echo "Fetching latest from origin..."
     git -C $repo_root fetch origin $main --quiet
@@ -371,7 +357,7 @@ function claude-sync --description "Rebase all Claude worktrees onto latest main
             continue
         end
 
-        set -l dirty (__claude_dirty_count $wt)
+        set -l dirty (git_dirty_count $wt)
         if test $dirty -gt 0
             set_color yellow
             printf "  %-40s skipped (%s uncommitted changes)\n" $name $dirty
@@ -394,10 +380,10 @@ function claude-sync --description "Rebase all Claude worktrees onto latest main
 end
 
 function claude-dash --description "Dashboard of all Claude worktrees with Jira status"
-    set -l repo_root (__claude_repo_root)
+    set -l repo_root (git_repo_root)
     or return 1
 
-    set -l main (__claude_main_branch)
+    set -l main (git_main_branch)
     set -l worktrees (__claude_worktrees $repo_root)
 
     if test (count $worktrees) -eq 0
@@ -420,7 +406,7 @@ function claude-dash --description "Dashboard of all Claude worktrees with Jira 
 
         # Git status summary
         set -l ahead (git -C $wt rev-list --count origin/$main..HEAD 2>/dev/null; or echo "?")
-        set -l dirty (__claude_dirty_count $wt)
+        set -l dirty (git_dirty_count $wt)
         set -l git_info $ahead"c"
         test $dirty -gt 0; and set git_info "$git_info +$dirty"
 
@@ -467,7 +453,7 @@ function claude-bg --description "Run Claude in background on a worktree task"
     set -l target $argv[1]
     set -l prompt $argv[2..-1]
 
-    set -l repo_root (__claude_repo_root)
+    set -l repo_root (git_repo_root)
     or return 1
 
     pushd $repo_root
@@ -503,6 +489,84 @@ function claude-bg --description "Run Claude in background on a worktree task"
     popd
 end
 
+function claude-review --description "Check out a PR into a worktree and start a code review"
+    if test (count $argv) -ne 1
+        echo "Usage: claude-review <PR-number|ROX-ticket>"
+        return 1
+    end
+
+    set -l input $argv[1]
+    set -l repo_root (git_repo_root)
+    or return 1
+
+    pushd $repo_root
+
+    # Resolve input to a PR number
+    set -l pr_number
+    if string match -qr '^\d+$' -- $input
+        set pr_number $input
+    else
+        set -l ticket (string upper -- $input)
+        echo "Searching for PRs matching $ticket..."
+        set -l result (gh pr list --search "$ticket" --json number,headRefName,title --limit 5 2>/dev/null)
+        set -l count (printf '%s' $result | jq 'length')
+
+        if test "$count" = "0"
+            echo "No open PRs found for $ticket"
+            popd
+            return 1
+        else if test "$count" = "1"
+            set pr_number (printf '%s' $result | jq -r '.[0].number')
+        else
+            echo "Multiple PRs found:"
+            printf '%s' $result | jq -r '.[] | "  #\(.number) \(.title)"'
+            read -P "PR number: " pr_number
+        end
+    end
+
+    # Fetch PR details
+    set -l pr_json (gh pr view $pr_number --json headRefName,title,number 2>/dev/null)
+    if test $status -ne 0
+        echo "Error: could not fetch PR #$pr_number"
+        popd
+        return 1
+    end
+
+    set -l pr_title (printf '%s' $pr_json | jq -r '.title')
+    set -l pr_branch (printf '%s' $pr_json | jq -r '.headRefName')
+
+    echo "PR #$pr_number: $pr_title"
+    echo "Branch: $pr_branch"
+
+    # Check for existing worktree
+    set -l wt_name review-$pr_number
+    set -l wt_path .claude/worktrees/$wt_name
+
+    if test -d "$wt_path"
+        echo "Resuming review in existing worktree: $wt_path"
+        tmux_title (basename $repo_root) $wt_name
+        cd $wt_path
+        claude --continue
+        popd
+        return
+    end
+
+    # Fetch the PR branch and create worktree
+    git fetch origin $pr_branch 2>/dev/null
+    git worktree add $wt_path origin/$pr_branch 2>/dev/null
+    if test $status -ne 0
+        echo "Error: failed to create worktree"
+        popd
+        return 1
+    end
+
+    cd $wt_path
+    tmux_title (basename $repo_root) $wt_name
+
+    claude --name "review-$pr_number" "/review"
+    popd
+end
+
 # Aliases
 alias cs=claude-switch
 alias cr=claude-resume
@@ -512,9 +576,10 @@ alias ct=claude-status
 alias cy=claude-sync
 alias cb=claude-bg
 alias co=claude-dash
+alias cv=claude-review
 
 # Tab completions
-for cmd in claude-switch cs
+for cmd in claude-switch claude-review cs cv
     complete -c $cmd -f -a '(__claude_jira_completions)'
 end
 for cmd in claude-clean claude-resume claude-bg cx cr cb

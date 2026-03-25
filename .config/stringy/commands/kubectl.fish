@@ -9,7 +9,6 @@ alias rox="kubectl -n stackrox"
 
 set -gx KUBE_EDITOR "nvim"
 
-if type -q "kubectl";
+if command -q kubectl
     source (kubectl completion fish | psub)
 end
-

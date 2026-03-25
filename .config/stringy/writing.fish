@@ -9,9 +9,9 @@ function free-write
     nvim $NOVEL_BASE_DIR"/Free Writing/"(date +"%Y-%m-%d").md
 end
 
-function word-count
+function word-count --description "Count words in a file or directory of markdown files"
     if test -d "$argv[1]"
-        find $argv[1] -name '*.md' | xargs -d '\n' wc -w
+        wc -w $argv[1]/**/*.md
     else
         wc -w $argv[1]
     end

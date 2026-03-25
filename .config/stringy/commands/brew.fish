@@ -1,4 +1,4 @@
 
-if test -f /home/linuxbrew/.linuxbrew/bin; then
+if test -d /home/linuxbrew/.linuxbrew/bin
     eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 end

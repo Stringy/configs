@@ -1,2 +1,4 @@
 
-alias colima-start="colima start -k -c 4 -d 60 -m 16"
+if test (uname) = Darwin
+    alias colima-start="colima start -k -c 4 -d 60 -m 16"
+end

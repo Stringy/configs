@@ -2,7 +2,7 @@
 function collector-test --description "Run collector test"
     argparse 'h/help' 'f/full' 't/test=' 'v/version=' -- $argv
 
-    if set -q _flag_h
+    if set -ql _flag_h
         echo "Usage: collector-test [OPTIONS]"
         echo " -h/--help    Print usage"
         echo " -f/--full    Use full image tag (append -full to the tag)"
@@ -16,10 +16,11 @@ function collector-test --description "Run collector test"
 
     if not test -d $test_dir
         echo "$test_dir directory does not exist!"
+        return 1
     end
 
     set -l tag_suffix
-    if set -q _flag_f
+    if set -ql _flag_f
         set tag_suffix "-full"
     end
 
