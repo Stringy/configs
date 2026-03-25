@@ -149,13 +149,43 @@ function claude-switch --description "Create or resume a Claude worktree session
     set -l slug (__claude_slugify "$title")
     set -l wt_name (string lower -- $ticket)-$slug
     set -l branch_prefix (string lower -- (string split ' ' -- (git config user.name))[1])
-    set -l branch_name $branch_prefix/$ticket-$slug
     set -l wt_path .claude/worktrees/$wt_name
 
-    echo "Creating worktree: $wt_path"
-    echo "Branch: $branch_name"
+    # Check for existing branches matching this ticket
+    git fetch --quiet 2>/dev/null
+    set -l matching_branches (git branch -r --list "*$ticket*" 2>/dev/null | string trim | string replace 'origin/' '')
 
-    git worktree add -b $branch_name $wt_path
+    set -l branch_name
+    if test (count $matching_branches) -eq 1
+        set branch_name $matching_branches[1]
+        echo "Found existing branch: $branch_name"
+    else if test (count $matching_branches) -gt 1
+        echo "Multiple branches found for $ticket:"
+        set -l pick
+        if command -q fzf
+            set pick (printf '%s\n' $matching_branches | fzf --prompt="Select branch: ")
+        else
+            for i in (seq (count $matching_branches))
+                echo "  $i) $matching_branches[$i]"
+            end
+            read -P "Select [1-"(count $matching_branches)"], or Enter for new branch: " -l idx
+            if test -n "$idx"
+                set pick $matching_branches[$idx]
+            end
+        end
+        if test -n "$pick"
+            set branch_name $pick
+            echo "Using branch: $branch_name"
+        end
+    end
+
+    if test -n "$branch_name"
+        git worktree add -b $branch_name $wt_path origin/$branch_name 2>/dev/null
+    else
+        set branch_name $branch_prefix/$ticket-$slug
+        echo "Creating new branch: $branch_name"
+        git worktree add -b $branch_name $wt_path
+    end
     if test $status -ne 0
         echo "Error: failed to create worktree"
         popd
