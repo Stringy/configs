@@ -3,6 +3,10 @@ alias infra-kconf="set -x KUBECONFIG $HOME/infra/kubeconfig"
 
 set -gx INFRA_ROOT_DIR "$HOME/infra"
 
+if test -e $HOME/.config/secrets/infractl
+    set -gx INFRA_TOKEN (cat $HOME/.config/secrets/infractl)
+end
+
 function infra-dl --description "Download configuration for an infra cluster"
     set -l infra_name $argv[1]
 

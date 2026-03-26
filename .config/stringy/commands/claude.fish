@@ -204,7 +204,7 @@ function claude-switch --description "Create or resume a Claude worktree session
     popd
 end
 
-function claude-resume --description "Resume a Claude session in a worktree (interactive picker)"
+function claude-resume --description "Resume a Claude session in a worktree"
     set -l repo_root (git_repo_root)
     or return 1
 
@@ -220,7 +220,28 @@ function claude-resume --description "Resume a Claude session in a worktree (int
     end
 
     set -l pick
-    if test (count $choices) -eq 1
+    if test (count $argv) -gt 0
+        # Direct argument — try exact match then fuzzy
+        for choice in $choices
+            if test "$choice" = "$argv[1]"
+                set pick $choice
+                break
+            end
+        end
+        if test -z "$pick"
+            set -l target (string lower -- $argv[1])
+            for choice in $choices
+                if string match -qi "*$target*" -- $choice
+                    set pick $choice
+                    break
+                end
+            end
+        end
+        if test -z "$pick"
+            echo "No worktree matching '$argv[1]'"
+            return 1
+        end
+    else if test (count $choices) -eq 1
         set pick $choices[1]
     else if command -q fzf
         set pick (printf '%s\n' $choices | fzf --prompt="Select worktree: ")
