@@ -9,6 +9,12 @@ alias rox="kubectl -n stackrox"
 
 set -gx KUBE_EDITOR "nvim"
 
+# Cache kubectl completions — regenerate when kubectl is updated
 if command -q kubectl
-    source (kubectl completion fish | psub)
+    set -l cache ~/.cache/kubectl-completions.fish
+    set -l kubectl_path (command -s kubectl)
+    if not test -f $cache; or test $kubectl_path -nt $cache
+        kubectl completion fish > $cache
+    end
+    source $cache
 end
