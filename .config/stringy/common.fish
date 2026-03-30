@@ -1,4 +1,6 @@
 
+set -gx STRINGY_SCRIPTS_ROOT $HOME/.config/stringy/scripts
+
 source $HOME/.config/stringy/utils.fish
 
 alias vim="nvim"
@@ -23,7 +25,6 @@ end
 
 source $HOME/.config/stringy/fish/plugins.fish
 source $HOME/.config/stringy/vms.fish
-source $HOME/.config/stringy/writing.fish
 
 alias cdme="cd $HOME/code/go/src/github.com/stringy"
 alias cdg="cd $HOME/code/go/src/github.com"

@@ -92,6 +92,32 @@ function __claude_jira_completions --description "Cached Jira ticket completions
     end
 end
 
+function __claude_jira_fetch --description "Fetch Jira ticket JSON with daily cache"
+    set -l ticket $argv[1]
+    set -l cache_dir ~/.cache/jira-tickets
+    set -l cache $cache_dir/(string lower -- $ticket).json
+    set -l ttl 86400
+
+    if test -f $cache
+        set -l age (math (date +%s) - (stat -c %Y $cache))
+        if test $age -lt $ttl
+            cat $cache
+            return
+        end
+    end
+
+    set -l result (jira issue view $ticket --raw 2>/dev/null)
+    if test $status -eq 0
+        mkdir -p $cache_dir
+        printf '%s' $result > $cache
+        printf '%s' $result
+    else if test -f $cache
+        cat $cache
+    else
+        return 1
+    end
+end
+
 # --- Main functions ---
 
 function claude-switch --description "Create or resume a Claude worktree session for a Jira ticket"
@@ -130,7 +156,7 @@ function claude-switch --description "Create or resume a Claude worktree session
     end
 
     echo "Fetching $ticket from Jira..."
-    set -l raw_json (jira issue view $ticket --raw 2>/dev/null)
+    set -l raw_json (__claude_jira_fetch $ticket)
     if test $status -ne 0
         echo "Error: could not fetch $ticket from Jira"
         popd
@@ -179,15 +205,17 @@ function claude-switch --description "Create or resume a Claude worktree session
         end
     end
 
+    set -l worktree_output
     if test -n "$branch_name"
-        git worktree add -b $branch_name $wt_path origin/$branch_name 2>/dev/null
+        set worktree_output (git worktree add -B $branch_name $wt_path origin/$branch_name 2>&1)
     else
         set branch_name $branch_prefix/$ticket-$slug
         echo "Creating new branch: $branch_name"
-        git worktree add -b $branch_name $wt_path
+        set worktree_output (git worktree add -b $branch_name $wt_path 2>&1)
     end
     if test $status -ne 0
         echo "Error: failed to create worktree"
+        echo $worktree_output
         popd
         return 1
     end
@@ -195,7 +223,50 @@ function claude-switch --description "Create or resume a Claude worktree session
     cd $wt_path
     tmux_title (basename $repo_root) $wt_name
 
-    set -l initial_prompt "I'm working on $ticket: $title. The Jira ticket description and context has been loaded. Let's get started."
+    # Build enriched prompt from Jira data
+    set -l issue_type (printf '%s' $raw_json | jq -r '.fields.issuetype.name // "Unknown"' 2>/dev/null)
+    set -l jira_priority (printf '%s' $raw_json | jq -r '.fields.priority.name // "Unknown"' 2>/dev/null)
+    set -l jira_status (printf '%s' $raw_json | jq -r '.fields.status.name // "Unknown"' 2>/dev/null)
+    set -l epic_key (printf '%s' $raw_json | jq -r '.fields.parent.key // empty' 2>/dev/null)
+    set -l epic_title (printf '%s' $raw_json | jq -r '.fields.parent.fields.summary // empty' 2>/dev/null)
+    set -l description (printf '%s' $raw_json | jq -r '[.fields.description | .. | .text? // empty] | join(" ")' 2>/dev/null)
+    set -l linked_issues (printf '%s' $raw_json | jq -r '[.fields.issuelinks[]? | if .outwardIssue then "\(.type.outward) \(.outwardIssue.key): \(.outwardIssue.fields.summary) [\(.outwardIssue.fields.status.name)]" elif .inwardIssue then "\(.type.inward) \(.inwardIssue.key): \(.inwardIssue.fields.summary) [\(.inwardIssue.fields.status.name)]" else empty end] | join("\n")' 2>/dev/null)
+    set -l comments (printf '%s' $raw_json | jq -r '[.fields.comment.comments | .[-5:][]? | "\(.author.displayName): \([.body | .. | .text? // empty] | join(" "))"] | join("\n---\n")' 2>/dev/null)
+
+    set -l initial_prompt "I'm working on $ticket: $title
+
+## Ticket Details
+- Type: $issue_type | Status: $jira_status | Priority: $jira_priority"
+
+    if test -n "$epic_key"
+        set initial_prompt "$initial_prompt
+- Epic: $epic_key — $epic_title"
+    end
+
+    if test -n "$description"
+        set initial_prompt "$initial_prompt
+
+## Description
+$description"
+    end
+
+    if test -n "$linked_issues"
+        set initial_prompt "$initial_prompt
+
+## Linked Issues
+$linked_issues"
+    end
+
+    if test -n "$comments"
+        set initial_prompt "$initial_prompt
+
+## Recent Comments
+$comments"
+    end
+
+    set initial_prompt "$initial_prompt
+
+Let's get started."
     if set -ql _flag_p
         set initial_prompt "$initial_prompt $_flag_p"
     end
@@ -464,7 +535,7 @@ function claude-dash --description "Dashboard of all Claude worktrees with Jira 
         # Jira status
         set -l jira_status "?"
         if test -n "$ticket"; and command -q jira
-            set jira_status (jira issue view $ticket --raw 2>/dev/null | jq -r '.fields.status.name' 2>/dev/null)
+            set jira_status (__claude_jira_fetch $ticket | jq -r '.fields.status.name' 2>/dev/null)
             test -z "$jira_status" -o "$jira_status" = "null"; and set jira_status "?"
         end
 
@@ -618,6 +689,173 @@ function claude-review --description "Check out a PR into a worktree and start a
     popd
 end
 
+function claude-watch --description "Watch CI for a PR and notify on completion"
+    argparse 't/triage' 'i/interval=' -- $argv
+    or return 1
+
+    if test (count $argv) -ne 1
+        echo "Usage: claude-watch [-t] [-i seconds] <PR#|ticket|worktree>"
+        return 1
+    end
+
+    set -l input $argv[1]
+    set -l repo_root (git_repo_root)
+    or return 1
+
+    set -l interval 300
+    set -ql _flag_i; and set interval $_flag_i
+
+    pushd $repo_root
+
+    # Resolve input to a PR number and branch
+    set -l pr_number
+    set -l branch
+    set -l wt_path
+
+    if string match -qr '^\d+$' -- $input
+        set pr_number $input
+    else
+        # Find worktree, get branch, find PR from branch
+        if test -d ".claude/worktrees/$input"
+            set wt_path (realpath .claude/worktrees/$input)
+        else
+            set wt_path (__claude_find_worktree $input)
+        end
+        if test -n "$wt_path"
+            set branch (git -C $wt_path rev-parse --abbrev-ref HEAD 2>/dev/null)
+            set pr_number (gh pr list --head $branch --json number --jq '.[0].number' 2>/dev/null)
+        end
+    end
+
+    if test -z "$pr_number"
+        echo "Error: could not find a PR for '$input'"
+        popd
+        return 1
+    end
+
+    # Get branch name for display/slug if we don't have it yet
+    if test -z "$branch"
+        set branch (gh pr view $pr_number --json headRefName --jq '.headRefName' 2>/dev/null)
+    end
+
+    set -l slug (string replace -a '/' '-' -- $branch)
+    set -l logfile /tmp/claude-watch-$slug.log
+    set -l pidfile /tmp/claude-watch-$slug.pid
+
+    if test -f $pidfile; and kill -0 (cat $pidfile) 2>/dev/null
+        echo "Already watching PR #$pr_number (PID "(cat $pidfile)")"
+        popd
+        return 1
+    end
+
+    echo "Watching CI for PR #$pr_number ($branch) every "$interval"s"
+
+    set -l triage_worktree ""
+    set -ql _flag_t; and test -n "$wt_path"; and set triage_worktree $wt_path
+
+    $STRINGY_SCRIPTS_ROOT/claude-watch-ci.fish $pr_number $branch $interval $pidfile $logfile $triage_worktree &
+
+    echo "PID: $last_pid"
+    echo "Log: $logfile"
+    echo "Monitor with: tail -f $logfile"
+
+    popd
+end
+
+function claude-watches --description "List active CI watchers"
+    set -l found 0
+    for pidfile in /tmp/claude-watch-*.pid
+        test -f $pidfile; or continue
+        set -l pid (cat $pidfile)
+        if kill -0 $pid 2>/dev/null
+            set found (math $found + 1)
+            set -l slug (string replace -r '.*/claude-watch-(.*)\.pid' '$1' -- $pidfile)
+            set -l logfile /tmp/claude-watch-$slug.log
+            set -l branch (head -1 $logfile 2>/dev/null | string replace 'Watching CI for ' '')
+            set -l started (sed -n '2p' $logfile 2>/dev/null | string replace 'Started: ' '')
+
+            set -l last_status (tail -1 $logfile 2>/dev/null)
+
+            printf "  PID %-8s %-40s (since %s)\n" $pid $branch "$started"
+            printf "               %s\n" "$last_status"
+        else
+            rm -f $pidfile
+        end
+    end
+    if test $found -eq 0
+        echo "No active watchers."
+    end
+end
+
+function claude-summary --description "Summarise work across all Claude worktrees for standup"
+    argparse 's/since=' 'c/claude' -- $argv
+    or return 1
+
+    set -l repo_root (git_repo_root)
+    or return 1
+
+    set -l since "yesterday"
+    set -ql _flag_s; and set since $_flag_s
+
+    set -l main (git_main_branch)
+    set -l worktrees (__claude_worktrees $repo_root)
+
+    if test (count $worktrees) -eq 0
+        echo "No Claude worktrees found."
+        return 0
+    end
+
+    set -l lines
+    set -a lines "# Work Summary — "(date +%Y-%m-%d)" (since $since)"
+    set -a lines "Repository: "(basename $repo_root)
+    set -a lines ""
+
+    for wt in $worktrees
+        set -l name (basename $wt)
+        set -l branch (git -C $wt rev-parse --abbrev-ref HEAD 2>/dev/null)
+        set -l ticket (string upper -- (string match -r '^[a-z]+-[0-9]+' -- $name))
+
+        set -l commits (git -C $wt log --since="$since" --oneline 2>/dev/null)
+        set -l commit_count (count $commits)
+        set -l dirty (git_dirty_count $wt)
+        set -l ahead (git -C $wt rev-list --count origin/$main..HEAD 2>/dev/null; or echo "?")
+
+        set -l jira_status ""
+        if test -n "$ticket"; and command -q jira
+            set jira_status (__claude_jira_fetch $ticket | jq -r '.fields.status.name // empty' 2>/dev/null)
+        end
+
+        set -l pr_info ""
+        if command -q gh
+            set pr_info (gh pr list --head $branch --json url,state --jq '.[0] | "\(.state) \(.url)"' 2>/dev/null)
+        end
+
+        set -a lines "## $ticket — $name"
+        set -a lines "- Branch: $branch ($ahead commits ahead of $main)"
+        test -n "$jira_status"; and set -a lines "- Jira: $jira_status"
+
+        set -l activity "$commit_count commit(s) since $since"
+        test $dirty -gt 0; and set activity "$activity, $dirty uncommitted changes"
+        set -a lines "- Activity: $activity"
+
+        if test $commit_count -gt 0
+            set -a lines "- Recent commits:"
+            for c in $commits
+                set -a lines "  - $c"
+            end
+        end
+
+        test -n "$pr_info"; and set -a lines "- PR: $pr_info"
+        set -a lines ""
+    end
+
+    if set -ql _flag_c
+        printf '%s\n' $lines | claude --print "Summarise this worktree activity as a concise standup update. Use plain English, group by ticket, mention blockers or things needing review. Keep it to 3-5 bullet points."
+    else
+        printf '%s\n' $lines
+    end
+end
+
 # Aliases
 alias cs=claude-switch
 alias cr=claude-resume
@@ -628,11 +866,14 @@ alias cy=claude-sync
 alias cb=claude-bg
 alias co=claude-dash
 alias cv=claude-review
+alias cw=claude-watch
+alias cws=claude-watches
+alias cm=claude-summary
 
 # Tab completions
 for cmd in claude-switch claude-review cs cv
     complete -c $cmd -f -a '(__claude_jira_completions)'
 end
-for cmd in claude-clean claude-resume claude-bg cx cr cb
+for cmd in claude-clean claude-resume claude-bg claude-watch cx cr cb cw
     complete -c $cmd -f -a '(__claude_worktree_completions)'
 end
