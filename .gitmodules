@@ -1,0 +1,3 @@
+[submodule "/home/ghutton/.config/stringy/templates/pandoc-shunn"]
+	path = /home/ghutton/.config/stringy/templates/pandoc-shunn
+	url = https://github.com/prosegrinder/pandoc-templates.git

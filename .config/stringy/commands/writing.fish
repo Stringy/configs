@@ -25,9 +25,10 @@ function novel-new --description "Create a new novel project from template"
 
     mkdir -p $project_path/chapters $project_path/notes
 
-    for f in $template_dir/*.md
+    for f in $template_dir/*.md $template_dir/*.yaml $template_dir/Makefile
         sed "s/{{PROJECT_NAME}}/$project_name/g" $f > $project_path/(basename $f)
     end
+    cp $template_dir/.gitignore $project_path/.gitignore
 
     git -C $project_path init --quiet
     git -C $project_path add -A
