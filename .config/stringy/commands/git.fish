@@ -62,6 +62,39 @@ end
 
 complete -c cdw -f -a '(git worktree list --porcelain 2>/dev/null | string match "worktree *" | string replace "worktree " "" | xargs -I{} basename {})'
 
+function gh-notify --description "Start/stop GitHub notification polling"
+    set -l pidfile /tmp/gh-notify.pid
+
+    switch $argv[1]
+        case start
+            if test -f $pidfile; and kill -0 (cat $pidfile) 2>/dev/null
+                echo "Already running (PID "(cat $pidfile)")"
+                return 1
+            end
+            set -l interval (test (count $argv) -gt 1; and echo $argv[2]; or echo 300)
+            $STRINGY_SCRIPTS_ROOT/gh-notify.fish $interval &
+            disown
+            echo "Started (PID $last_pid)"
+        case stop
+            if test -f $pidfile
+                kill (cat $pidfile) 2>/dev/null
+                rm -f $pidfile
+                echo "Stopped"
+            else
+                echo "Not running"
+            end
+        case status
+            if test -f $pidfile; and kill -0 (cat $pidfile) 2>/dev/null
+                echo "Running (PID "(cat $pidfile)")"
+            else
+                echo "Not running"
+                rm -f $pidfile 2>/dev/null
+            end
+        case '*'
+            echo "Usage: gh-notify start [interval_secs] | stop | status"
+    end
+end
+
 alias gr="git rebase"
 alias grc="git rebase --continue"
 alias gra="git rebase --abort"

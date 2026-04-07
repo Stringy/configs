@@ -30,7 +30,12 @@ function novel-new --description "Create a new novel project from template"
     end
     cp $template_dir/.gitignore $project_path/.gitignore
 
+    # Install git hooks
+    mkdir -p $project_path/.githooks
+    cp $template_dir/hooks/* $project_path/.githooks/
+
     git -C $project_path init --quiet
+    git -C $project_path config core.hooksPath .githooks
     git -C $project_path add -A
     git -C $project_path commit --quiet -m "Initial novel project: $project_name"
 

@@ -133,6 +133,7 @@ exec way-displays > /tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec mako
 exec autotiling-rs
+exec ~/.config/stringy/scripts/gh-notify.fish
 
 bindgesture swipe:right workspace prev
 bindgesture swipe:left workspace next
