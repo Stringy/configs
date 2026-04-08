@@ -145,7 +145,7 @@ bindsym --release --whole-window BTN_TASK seat seat0 cursor release BTN_MIDDLE
 bindsym $mod+Shift+d exec ddcutil setvcp 60 0x0f --display 1
 
 bindsym $mod+Shift+Escape exec gtklock -d
-bindsym $mod+Shift+s exec gtklock -d && systemctl suspend
+bindsym $mod+Shift+s exec systemctl suspend
 
 exec swayidle -w \
     timeout 900 'gtklock -d' \
