@@ -71,7 +71,7 @@ function gh-notify --description "Start/stop GitHub notification polling"
                 echo "Already running (PID "(cat $pidfile)")"
                 return 1
             end
-            set -l interval (test (count $argv) -gt 1; and echo $argv[2]; or echo 300)
+            set -l interval (test (count $argv) -gt 1; and echo $argv[2]; or echo 60)
             $STRINGY_SCRIPTS_ROOT/gh-notify.fish $interval &
             disown
             echo "Started (PID $last_pid)"
@@ -89,6 +89,11 @@ function gh-notify --description "Start/stop GitHub notification polling"
             else
                 echo "Not running"
                 rm -f $pidfile 2>/dev/null
+            end
+            set -l logfile ~/.cache/gh-notify.log
+            if test -f $logfile
+                echo ""
+                tail -5 $logfile
             end
         case '*'
             echo "Usage: gh-notify start [interval_secs] | stop | status"
