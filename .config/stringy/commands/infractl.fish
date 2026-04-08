@@ -50,9 +50,20 @@ complete -x --command infra-clr --arguments "(infractl list -q | awk '{\$1=\$1;p
 complete -x --command infra-clr --arguments "(complete_in_dir $INFRA_ROOT_DIR)"
 complete -x --command infra-switch --arguments "(infractl list -q | awk '{\$1=\$1;print}')"
 
+function infra-local --description "Switch kubeconfig to local k3s cluster"
+    set -l config /etc/rancher/k3s/k3s.yaml
+    if not test -f $config
+        echo "k3s not installed"
+        return 1
+    end
+    echo "[*] setting KUBECONFIG=$config"
+    set -gx KUBECONFIG $config
+end
+
 alias idl=infra-dl
 alias iclr=infra-clr
 alias is=infra-switch
 alias infra="kubectl config get-clusters"
 alias ils="infractl list"
 alias inew=infra-new
+alias isl=infra-local
