@@ -856,6 +856,10 @@ function claude-summary --description "Summarise work across all Claude worktree
     end
 end
 
+function claude-personal --description "Start Claude using personal Anthropic account (Sonnet)"
+    CLAUDE_CODE_USE_VERTEX=0 claude --model sonnet $argv
+end
+
 # Aliases
 alias cs=claude-switch
 alias cr=claude-resume

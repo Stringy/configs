@@ -9,3 +9,4 @@ When working on big features with lots of file changes:
 
 - [Co-author lookup](feedback_coauthor_lookup.md) — Never guess co-author details; verify from git log. Credit reviewers for suggested code.
 - [Infra cluster access](reference_infra_clusters.md) — How to find, connect to, and use ephemeral test clusters via infractl
+- [Never auto-commit superpowers specs](feedback_no_auto_commit_specs.md) — User commits design docs and superpowers markdown at their discretion

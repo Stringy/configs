@@ -72,6 +72,10 @@ function latest-support-package --description "Get the latest support package"
         | sed "s|^$COLLECTOR_SUPPORT_PKG_BUCKET/||"
 end
 
+function latest-main-tag --description "Get the MAIN_IMAGE_TAG from the latest green master build"
+    git -C $STACKROX_ROOT/stackrox describe (gh run list --repo stackrox/stackrox --branch master --workflow build --status success --limit 1 --json headSha -q '.[0].headSha')
+end
+
 complete -x --command cdrox --arguments "(complete_in_dir $STACKROX_ROOT)"
 
 alias cdc='cdrox collector'
