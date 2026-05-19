@@ -27,4 +27,7 @@
   "effortLevel": "medium",
   "promptSuggestionEnabled": false,
   "theme": "light"
+  "attribution": {
+    "commit": ""
+  }
 }

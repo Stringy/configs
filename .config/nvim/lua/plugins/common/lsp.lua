@@ -114,7 +114,16 @@ M.common = function()
         }
     })
 
-    vim.lsp.enable({ 'gopls', 'lua_lsp' })
+    vim.lsp.config('fstar', {
+        on_attach = M.on_attach,
+        flags = M.lsp_flags,
+        capabilities = M.capabilities(),
+        cmd = { '/home/ghutton/.opam/default/bin/fstar.exe', '--lsp' },
+        filetypes = { 'fstar' },
+        root_markers = { 'Makefile', '.fstar-root', '.git' },
+    })
+
+    vim.lsp.enable({ 'gopls', 'lua_lsp', 'fstar' })
 end
 
 return M

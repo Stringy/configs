@@ -122,6 +122,19 @@ function collector-clear-logs --description "Clear collector logs"
     rm -f $STACKROX_ROOT/collector/integration-tests/container-logs/core-bpf/*
 end
 
+function rox-central --description "Port-forward to Central (8000 -> 443)"
+    set -l existing (pgrep -f 'port-forward svc/central 8000:443')
+    if test -n "$existing"
+        echo "Already forwarding (PID $existing)"
+        return 0
+    end
+
+    nohup oc -n stackrox port-forward svc/central 8000:443 &>/dev/null &
+    disown
+    echo "Port-forwarding to Central (PID $last_pid)"
+    echo "  https://localhost:8000"
+end
+
 function rox-teardown
     set -l stackrox_pvs (kubectl get pv -o json | jq -r '.items[] | select(.spec.claimRef.namespace == "stackrox") | .metadata.name')
     kubectl -n stackrox delete --grace-period=0 --force deploy/central deploy/sensor ds/collector deploy/monitoring statefulsets/stackrox-monitoring-alertmanager
