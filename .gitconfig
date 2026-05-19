@@ -7,3 +7,25 @@
 
 [includeIf "gitdir:~/code/go/src/github.com/stringy/"]
 	path = ~/.config/stringy/git/personal
+
+[core]
+	editor = nvim
+	pager = delta
+[init]
+	defaultBranch = main
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	dark = false
+    side-by-side = true
+    syntax-theme = gruvbox-light
+[merge]
+	conflictStyle = zdiff3
+[coderabbit]
+	machineId = cli/78998a8b63b24da4b19b381961b37021

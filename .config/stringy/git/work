@@ -1,3 +1,7 @@
 [user]
 	name = Giles Hutton
 	email = ghutton@redhat.com
+	signingkey = D0D460F9DE83B7BF
+
+[commit]
+	gpgSign = true
