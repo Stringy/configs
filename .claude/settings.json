@@ -2,7 +2,6 @@
   "env": {
     "ENABLE_LSP_TOOL": "1"
   },
-  "model": "claude-opus-4-6[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -10,7 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/ghutton/.claude/hooks/rtk-rewrite.sh"
+            "command": "rtk hook claude"
           }
         ]
       }
@@ -24,5 +23,8 @@
     "lua-lsp@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "coderabbit@claude-plugins-official": true
-  }
+  },
+  "effortLevel": "medium",
+  "promptSuggestionEnabled": false,
+  "theme": "light"
 }

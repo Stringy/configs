@@ -34,3 +34,7 @@ function tmux_title --description "Set the tmux window name"
         tmux rename-window "$argv[1]"
     end
 end
+
+function at_work
+    test -f $HOME/.at-work
+end

@@ -1,0 +1,9 @@
+[user]
+	name = Giles Hutton
+	email = giles@gileshutton.com
+
+[includeIf "gitdir:~/code/go/src/github.com/stackrox/"]
+	path = ~/.config/stringy/git/work
+
+[includeIf "gitdir:~/code/go/src/github.com/stringy/"]
+	path = ~/.config/stringy/git/personal

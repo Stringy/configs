@@ -1,7 +1,9 @@
 
-set -gx CLAUDE_CODE_USE_VERTEX 1
-set -gx CLOUD_ML_REGION us-east5
-set -gx ANTHROPIC_VERTEX_PROJECT_ID itpc-gcp-hcm-pe-eng-claude
+if at_work
+    set -gx CLAUDE_CODE_USE_VERTEX 1
+    set -gx CLOUD_ML_REGION us-east5
+    set -gx ANTHROPIC_VERTEX_PROJECT_ID itpc-gcp-hcm-pe-eng-claude
+end
 
 set -gx CLAUDE_CONTAINER_DIR ~/.config/stringy/containers/claude-code
 set -gx CLAUDE_IMAGE_NAME claude-code
