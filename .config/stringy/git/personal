@@ -1,3 +1,7 @@
 [user]
 	name = Giles Hutton
 	email = giles@gileshutton.com
+    signingkey = 89B3A868A5CA6D5F
+
+[commit]
+    gpgSign = true
