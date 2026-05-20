@@ -26,6 +26,11 @@ end
 source $HOME/.config/stringy/fish/plugins.fish
 source $HOME/.config/stringy/vms.fish
 
+# Source notes helpers if notes directory exists
+if test -d $HOME/code/go/src/github.com/stringy/notes
+    source $HOME/code/go/src/github.com/stringy/notes/scripts/note-helpers.fish
+end
+
 alias cdme="cd $HOME/code/go/src/github.com/stringy"
 alias cdg="cd $HOME/code/go/src/github.com"
 
