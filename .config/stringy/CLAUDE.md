@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Version Control
+
+This directory is tracked via a bare git repo at `~/.cfg/` with `$HOME` as the work tree. This avoids needing a `.git` directory in `$HOME` itself. The fish `config` alias wraps this, but Claude Code runs bash and cannot use fish aliases — use the full git invocation instead:
+
+```bash
+git --git-dir=$HOME/.cfg/ --work-tree=$HOME status
+git --git-dir=$HOME/.cfg/ --work-tree=$HOME add ~/.config/stringy/commands/claude.fish
+git --git-dir=$HOME/.cfg/ --work-tree=$HOME commit -m "..."
+```
+
+Plain `git` commands inside this directory will not work — there is no `.git` here.
+
 ## What This Repo Is
 
 `~/.config/stringy` is a personal fish shell configuration library. It is sourced by `~/.config/fish/config.fish` via `common.fish`, which is the entry point that loads everything else.
