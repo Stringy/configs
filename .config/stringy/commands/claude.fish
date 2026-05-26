@@ -777,6 +777,70 @@ function claude-personal --description "Start Claude using personal Anthropic ac
     CLAUDE_CODE_USE_VERTEX=0 claude --model sonnet $argv
 end
 
+function claude-branch --description "Create or resume a Claude worktree session for an existing branch"
+    argparse 'p/prompt=' -- $argv
+    or return 1
+
+    if test (count $argv) -ne 1
+        echo "Usage: claude-branch [-p prompt] <branch-name>"
+        return 1
+    end
+
+    set -l branch $argv[1]
+    set -l repo_root (git_repo_root)
+    or return 1
+
+    pushd $repo_root
+
+    set -l wt_name (string replace -a '/' '-' -- $branch)
+
+    set -l existing_wt (__claude_find_worktree $wt_name)
+    if test -n "$existing_wt"
+        tmux_title (basename $repo_root) (basename $existing_wt)
+
+        set -l session_id (__claude_active_session $existing_wt)
+        if test -n "$session_id"
+            echo "Attaching to active session $session_id in: "(basename $existing_wt)
+            claude attach $session_id
+        else
+            echo "Resuming session in: "(basename $existing_wt)
+            cd $existing_wt
+            if set -ql _flag_p
+                claude --resume "$_flag_p"
+            else
+                claude --resume
+            end
+        end
+        popd
+        return
+    end
+
+    set -l wt_path .claude/worktrees/$wt_name
+
+    tmux_title (basename $repo_root) $wt_name
+
+    if git rev-parse --verify $branch >/dev/null 2>&1
+        git worktree add $wt_path $branch
+    else
+        echo "Branch '$branch' not found — creating from "(git_main_branch)
+        git worktree add -b $branch $wt_path origin/(git_main_branch)
+    end
+    or begin
+        echo "Error: could not create worktree for branch '$branch'"
+        popd
+        return 1
+    end
+
+    cd $wt_path
+    if set -ql _flag_p
+        claude "$_flag_p"
+    else
+        claude
+    end
+
+    popd
+end
+
 # Aliases
 alias cs=claude-switch
 alias cr=claude-resume
@@ -784,17 +848,21 @@ alias cl=claude-list
 alias cx=claude-clean
 alias ct=claude-status
 alias cy=claude-sync
-alias cb=claude-bg
+alias cbg=claude-bg
 alias co=claude-dash
 alias cv=claude-review
 alias cw=claude-watch
 alias cws=claude-watches
 alias cm=claude-summary
+alias cb=claude-branch
 
 # Tab completions
 for cmd in claude-switch claude-review cs cv
     complete -c $cmd -f -a '(__claude_jira_completions)'
 end
-for cmd in claude-clean claude-resume claude-bg claude-watch cx cr cb cw
+for cmd in claude-clean claude-resume claude-bg claude-watch cx cr cbg cw
     complete -c $cmd -f -a '(__claude_worktree_completions)'
+end
+for cmd in claude-branch cb
+    complete -c $cmd -f -a '(git branch --format "%(refname:short)" 2>/dev/null)'
 end
