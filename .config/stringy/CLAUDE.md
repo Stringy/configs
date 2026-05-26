@@ -8,7 +8,7 @@ This directory is tracked via a bare git repo at `~/.cfg/` with `$HOME` as the w
 
 ```bash
 git --git-dir=$HOME/.cfg/ --work-tree=$HOME status
-git --git-dir=$HOME/.cfg/ --work-tree=$HOME add ~/.config/stringy/commands/claude.fish
+git --git-dir=$HOME/.cfg/ --work-tree=$HOME add $HOME/.config/stringy/commands/claude.fish
 git --git-dir=$HOME/.cfg/ --work-tree=$HOME commit -m "..."
 ```
 
