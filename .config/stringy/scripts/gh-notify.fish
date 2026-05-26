@@ -57,9 +57,12 @@ while true
                 set heading "Mentioned"
         end
 
-        # Non-blocking: clicking the notification opens the PR in the browser
+        test -z "$heading"; and continue
+
+        # Non-blocking: clicking the notification opens the PR in the browser.
+        # timeout prevents notify-send -A from hanging forever if the daemon never responds.
         fish -c "
-            set -l action (notify-send -u normal -A 'default=Open' '$heading' '$repo: $title')
+            set -l action (timeout 30 notify-send -u normal -A 'default=Open' '$heading' '$repo: $title')
             if test \"\$action\" = 'default'
                 xdg-open '$html_url'
             end
