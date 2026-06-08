@@ -1,49 +1,37 @@
 
+# --- OpenCode environment ---
+
 if at_work
-    set -gx CLAUDE_CODE_USE_VERTEX 1
-    set -gx CLOUD_ML_REGION global
-    set -gx ANTHROPIC_VERTEX_PROJECT_ID itpc-gcp-hcm-pe-eng-claude
+    set -gx GOOGLE_CLOUD_PROJECT $ANTHROPIC_VERTEX_PROJECT_ID
+    set -gx VERTEX_LOCATION $CLOUD_ML_REGION
+    set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/application_default_credentials.json
 end
 
-set -gx CLAUDE_CONTAINER_DIR ~/.config/stringy/containers/claude-code
-set -gx CLAUDE_IMAGE_NAME claude-code
-
-# --- Container helpers ---
-
-function claude-build --description "Build the Claude Code container image"
-    podman build -t $CLAUDE_IMAGE_NAME $CLAUDE_CONTAINER_DIR $argv
-end
-
-function claude-run --description "Run Claude Code in a container, mounting gcloud creds and current directory"
-    podman run -it --rm \
-        -v ~/.config/gcloud:/home/claude/.config/gcloud:ro \
-        -v ~/.claude:/home/claude/.claude \
-        -v (pwd):/work \
-        -w /work \
-        $CLAUDE_IMAGE_NAME $argv
-end
+alias ocode=opencode
 
 # --- Internal helpers ---
 
-function __claude_worktrees --description "List Claude worktree paths in the given repo root"
+function __opencode_worktrees --description "List OpenCode worktree paths in the given repo root"
     git -C $argv[1] worktree list --porcelain \
-        | string match -r 'worktree .*/\.claude/worktrees/.*' \
+        | string match -r 'worktree .*/\.opencode/worktrees/.*' \
         | string replace 'worktree ' ''
 end
 
-function __claude_wt_branch --description "Get branch name for a worktree path"
+function __opencode_wt_branch --description "Get branch name for a worktree path"
     git -C $argv[1] rev-parse --abbrev-ref HEAD 2>/dev/null
 end
 
-function __claude_wt_ticket --description "Extract ticket ID (uppercased) from a worktree name"
+function __opencode_wt_ticket --description "Extract ticket ID (uppercased) from a worktree name"
     string upper -- (string match -r '^[a-z]+-[0-9]+' -- (basename $argv[1]))
 end
 
-function __claude_find_worktree --description "Find an existing worktree by substring match"
+function __opencode_find_worktree --description "Find an existing opencode worktree by substring match"
     set -l needle (string lower -- $argv[1])
     for line in (git worktree list --porcelain 2>/dev/null)
         if string match -q "worktree *" -- $line
             set -l wt_path (string replace 'worktree ' '' -- $line)
+            # Only match worktrees under .opencode/worktrees/
+            string match -q "*/.opencode/worktrees/*" -- $wt_path; or continue
             if string match -qi "*$needle*" -- (basename $wt_path)
                 echo $wt_path
                 return 0
@@ -53,24 +41,10 @@ function __claude_find_worktree --description "Find an existing worktree by subs
     return 1
 end
 
-function __claude_active_session --description "Find an active background agent session ID for a worktree path"
-    set -l wt_path (realpath $argv[1] 2>/dev/null)
-    test -z "$wt_path"; and return 1
-    for job_dir in ~/.claude/jobs/*/
-        test -f "$job_dir/state.json"; or continue
-        set -l job_cwd (jq -r '.cwd // .workingDirectory // empty' "$job_dir/state.json" 2>/dev/null)
-        if test "$job_cwd" = "$wt_path"
-            basename $job_dir
-            return 0
-        end
-    end
-    return 1
-end
-
-function __claude_stale_worktrees --description "List worktree paths with merged PRs"
+function __opencode_stale_worktrees --description "List worktree paths with merged PRs"
     set -l repo_root $argv[1]
-    for wt in (__claude_worktrees $repo_root)
-        set -l branch (__claude_wt_branch $wt)
+    for wt in (__opencode_worktrees $repo_root)
+        set -l branch (__opencode_wt_branch $wt)
         set -l merged (gh pr list --head $branch --state merged --json number --jq '.[0].number' 2>/dev/null)
         test -n "$merged"; and echo $wt
     end
@@ -78,23 +52,23 @@ end
 
 # --- Completions helpers ---
 
-function __claude_worktree_completions --description "List worktree names for tab completion"
+function __opencode_worktree_completions --description "List worktree names for tab completion"
     set -l root (git rev-parse --show-toplevel 2>/dev/null)
-    and for wt in (__claude_worktrees $root)
+    and for wt in (__opencode_worktrees $root)
         basename $wt
     end
 end
 
-# Jira helpers now live in jira.fish (__jira_completions, __jira_fetch, __slugify, __cached)
+# Jira helpers live in jira.fish (__jira_completions, __jira_fetch, __slugify, __cached)
 
 # --- Main functions ---
 
-function claude-switch --description "Create or resume a Claude worktree session for a Jira ticket"
+function opencode-switch --description "Create or resume an OpenCode worktree session for a Jira ticket"
     argparse 'r/repo=' 'p/prompt=' -- $argv
     or return 1
 
     if test (count $argv) -ne 1
-        echo "Usage: claude-switch [-r repo_path] [-p prompt] TICKET-ID"
+        echo "Usage: opencode-switch [-r repo_path] [-p prompt] TICKET-ID"
         return 1
     end
 
@@ -111,22 +85,15 @@ function claude-switch --description "Create or resume a Claude worktree session
     pushd $repo_root
 
     # Resume if worktree already exists
-    set -l existing_wt (__claude_find_worktree $ticket)
+    set -l existing_wt (__opencode_find_worktree $ticket)
     if test -n "$existing_wt"
         tmux_title (basename $repo_root) (basename $existing_wt)
 
-        set -l session_id (__claude_active_session $existing_wt)
-        if test -n "$session_id"
-            echo "Attaching to active session $session_id in: "(basename $existing_wt)
-            claude attach $session_id
+        echo "Resuming session in: "(basename $existing_wt)
+        if set -ql _flag_p
+            opencode --continue --prompt "$_flag_p" $existing_wt
         else
-            echo "Resuming session in: "(basename $existing_wt)
-            cd $existing_wt
-            if set -ql _flag_p
-                claude --resume "$_flag_p"
-            else
-                claude --resume
-            end
+            opencode --continue $existing_wt
         end
         popd
         return
@@ -179,6 +146,17 @@ function claude-switch --description "Create or resume a Claude worktree session
 
     tmux_title (basename $repo_root) $wt_name
 
+    # Create worktree
+    set -l wt_path .opencode/worktrees/$wt_name
+    set -l main (git_main_branch)
+    git fetch origin $main --quiet 2>/dev/null
+    git worktree add -b $wt_name $wt_path origin/$main
+    or begin
+        echo "Error: could not create worktree"
+        popd
+        return 1
+    end
+
     # Build enriched prompt
     set -l initial_prompt "I'm working on $ticket: $title
 
@@ -208,17 +186,18 @@ $comments"
 Let's get started."
     set -ql _flag_p; and set initial_prompt "$initial_prompt $_flag_p"
 
-    claude -w $wt_name --name $ticket "$initial_prompt"
+    opencode --prompt "$initial_prompt" --title "$ticket" $wt_path
     popd
 end
 
-function claude-resume --description "Resume a Claude session or open agents dashboard"
+function opencode-resume --description "Resume an OpenCode session in a worktree"
     if test (count $argv) -eq 0
+        # No argument: continue last session in current repo
         set -l repo_root (git_repo_root 2>/dev/null)
         if test -n "$repo_root"
-            claude agents --cwd $repo_root
+            opencode --continue $repo_root
         else
-            claude agents
+            opencode --continue
         end
         return
     end
@@ -226,35 +205,23 @@ function claude-resume --description "Resume a Claude session or open agents das
     set -l repo_root (git_repo_root)
     or return 1
 
-    set -l wt_path (__claude_find_worktree $argv[1])
+    set -l wt_path (__opencode_find_worktree $argv[1])
     if test -z "$wt_path"
-        echo "No worktree matching '$argv[1]'. Opening agents dashboard..."
-        claude agents --cwd $repo_root
-        return
+        echo "No worktree matching '$argv[1]'."
+        return 1
     end
 
     tmux_title (basename $repo_root) (basename $wt_path)
 
-    set -l session_id (__claude_active_session $wt_path)
-    if test -n "$session_id"
-        echo "Attaching to active session $session_id"
-        claude attach $session_id
-    else
-        cd $wt_path
-        claude --resume
-    end
+    echo "Resuming session in: "(basename $wt_path)
+    opencode --continue $wt_path
 end
 
-function claude-list --description "List agent sessions for current repo"
-    set -l repo_root (git_repo_root 2>/dev/null)
-    if test -n "$repo_root"
-        claude agents --cwd $repo_root
-    else
-        claude agents
-    end
+function opencode-list --description "List OpenCode sessions"
+    opencode session list
 end
 
-function claude-clean --description "Remove Claude worktrees"
+function opencode-clean --description "Remove OpenCode worktrees"
     argparse 'f/force' 's/stale' -- $argv
     or return 1
 
@@ -268,7 +235,7 @@ function claude-clean --description "Remove Claude worktrees"
 
     # Batch remove stale worktrees
     if set -ql _flag_s
-        set -l stale (__claude_stale_worktrees $repo_root)
+        set -l stale (__opencode_stale_worktrees $repo_root)
 
         if test (count $stale) -eq 0
             echo "No stale worktrees."
@@ -288,11 +255,11 @@ function claude-clean --description "Remove Claude worktrees"
         end
 
         for wt in $stale
-            set -l branch (__claude_wt_branch $wt)
+            set -l branch (__opencode_wt_branch $wt)
             echo "Removing: "(basename $wt)
             git worktree remove $force_flag $wt 2>/dev/null
             and git branch -D $branch 2>/dev/null
-            or echo "  Failed. Try: cx -f -s"
+            or echo "  Failed. Try: ocx -f -s"
         end
 
         popd
@@ -301,26 +268,26 @@ function claude-clean --description "Remove Claude worktrees"
 
     # Single worktree removal
     if test (count $argv) -ne 1
-        echo "Usage: claude-clean [-f] [-s] <worktree-name-or-ticket>"
-        echo "       claude-clean -s    Remove all worktrees with merged PRs"
+        echo "Usage: opencode-clean [-f] [-s] <worktree-name-or-ticket>"
+        echo "       opencode-clean -s    Remove all worktrees with merged PRs"
         popd
         return 1
     end
 
-    set -l wt_path (__claude_find_worktree $argv[1])
+    set -l wt_path (__opencode_find_worktree $argv[1])
     if test -z "$wt_path"
         echo "No worktree found matching '$argv[1]'"
         popd
         return 1
     end
 
-    set -l branch (__claude_wt_branch $wt_path)
+    set -l branch (__opencode_wt_branch $wt_path)
     echo "Removing worktree: "(basename $wt_path)
     read -P "Also delete branch '$branch'? [y/N] " -l confirm_branch
 
     git worktree remove $force_flag $wt_path
     if test $status -ne 0
-        echo "Failed. Try: cx -f $argv[1]"
+        echo "Failed. Try: ocx -f $argv[1]"
         popd
         return 1
     end
@@ -333,11 +300,11 @@ function claude-clean --description "Remove Claude worktrees"
     popd
 end
 
-function claude-stale --description "List worktrees with merged PRs ready for cleanup"
+function opencode-stale --description "List worktrees with merged PRs ready for cleanup"
     set -l repo_root (git_repo_root)
     or return 1
 
-    set -l stale (__claude_stale_worktrees $repo_root)
+    set -l stale (__opencode_stale_worktrees $repo_root)
 
     if test (count $stale) -eq 0
         echo "No stale worktrees."
@@ -346,7 +313,7 @@ function claude-stale --description "List worktrees with merged PRs ready for cl
 
     for wt in $stale
         set -l name (basename $wt)
-        set -l branch (__claude_wt_branch $wt)
+        set -l branch (__opencode_wt_branch $wt)
         set -l pr_info (gh pr list --head $branch --state merged --json number,title --jq '.[0] | "#\(.number) \(.title)"' 2>/dev/null)
         set -l dirty (git_dirty_count $wt)
         printf "  %-40s %s" $name "$pr_info"
@@ -354,19 +321,10 @@ function claude-stale --description "List worktrees with merged PRs ready for cl
         echo
     end
     echo ""
-    echo "Clean up with: cx -s"
+    echo "Clean up with: ocx -s"
 end
 
-function claude-status --description "Show agent sessions for current repo"
-    set -l repo_root (git_repo_root 2>/dev/null)
-    if test -n "$repo_root"
-        claude agents --cwd $repo_root
-    else
-        claude agents
-    end
-end
-
-function claude-sync --description "Rebase all Claude worktrees onto latest main"
+function opencode-sync --description "Rebase all OpenCode worktrees onto latest main"
     set -l repo_root (git_repo_root)
     or return 1
 
@@ -375,10 +333,10 @@ function claude-sync --description "Rebase all Claude worktrees onto latest main
     echo "Fetching latest from origin..."
     git -C $repo_root fetch origin $main --quiet
 
-    set -l worktrees (__claude_worktrees $repo_root)
+    set -l worktrees (__opencode_worktrees $repo_root)
 
     if test (count $worktrees) -eq 0
-        echo "No Claude worktrees to sync."
+        echo "No OpenCode worktrees to sync."
         return 0
     end
 
@@ -413,15 +371,15 @@ function claude-sync --description "Rebase all Claude worktrees onto latest main
     end
 end
 
-function claude-dash --description "Dashboard of all Claude worktrees with Jira status"
+function opencode-dash --description "Dashboard of all OpenCode worktrees with Jira status"
     set -l repo_root (git_repo_root)
     or return 1
 
     set -l main (git_main_branch)
-    set -l worktrees (__claude_worktrees $repo_root)
+    set -l worktrees (__opencode_worktrees $repo_root)
 
     if test (count $worktrees) -eq 0
-        echo "No Claude worktrees found."
+        echo "No OpenCode worktrees found."
         return 0
     end
 
@@ -433,8 +391,8 @@ function claude-dash --description "Dashboard of all Claude worktrees with Jira 
 
     for wt in $worktrees
         set -l name (basename $wt)
-        set -l branch (__claude_wt_branch $wt)
-        set -l ticket (__claude_wt_ticket $wt)
+        set -l branch (__opencode_wt_branch $wt)
+        set -l ticket (__opencode_wt_ticket $wt)
 
         set -l ahead (git -C $wt rev-list --count origin/$main..HEAD 2>/dev/null; or echo "?")
         set -l dirty (git_dirty_count $wt)
@@ -472,11 +430,9 @@ function claude-dash --description "Dashboard of all Claude worktrees with Jira 
     echo
 end
 
-function claude-bg --description "Send a prompt to a background agent session in a worktree"
+function opencode-bg --description "Send a prompt to OpenCode in a worktree (non-interactive)"
     if test (count $argv) -lt 2
-        echo "Usage: claude-bg <ticket-or-worktree> \"prompt\""
-        echo ""
-        echo "Tip: from inside a session, use /bg to background it"
+        echo "Usage: opencode-bg <ticket-or-worktree> \"prompt\""
         return 1
     end
 
@@ -485,25 +441,24 @@ function claude-bg --description "Send a prompt to a background agent session in
 
     pushd $repo_root
 
-    set -l wt_path (__claude_find_worktree $argv[1])
+    set -l wt_path (__opencode_find_worktree $argv[1])
     if test -z "$wt_path"
-        echo "No worktree found matching '$argv[1]'. Create one first with claude-switch."
+        echo "No worktree found matching '$argv[1]'. Create one first with opencode-switch."
         popd
         return 1
     end
 
     set -l name (basename $wt_path)
-    echo "Starting background Claude session in $name"
+    echo "Running OpenCode in $name"
 
-    cd $wt_path
-    claude --resume "$argv[2..-1]"
+    opencode run --continue --dir $wt_path $argv[2..-1]
 
     popd
 end
 
-function claude-review --description "Check out a PR into a worktree and start a code review"
+function opencode-review --description "Check out a PR and start a code review"
     if test (count $argv) -ne 1
-        echo "Usage: claude-review <PR-number|ROX-ticket>"
+        echo "Usage: opencode-review <PR-number|ROX-ticket>"
         return 1
     end
 
@@ -550,116 +505,31 @@ function claude-review --description "Check out a PR into a worktree and start a
     echo "Branch: $pr_branch"
 
     set -l wt_name review-$pr_number
-    set -l wt_path .claude/worktrees/$wt_name
+    set -l wt_path .opencode/worktrees/$wt_name
 
     if test -d "$wt_path"
         echo "Resuming review in existing worktree: $wt_path"
         tmux_title (basename $repo_root) $wt_name
-        cd $wt_path
-        claude --resume
+        opencode --continue $wt_path
         popd
         return
     end
 
     git fetch origin $pr_branch 2>/dev/null
+    git worktree add $wt_path origin/$pr_branch 2>/dev/null
+    or begin
+        echo "Error: could not create worktree for PR branch"
+        popd
+        return 1
+    end
 
     tmux_title (basename $repo_root) $wt_name
 
-    claude -w $wt_name --name "review-$pr_number" "/review"
+    opencode --prompt "/review" --title "review-$pr_number" $wt_path
     popd
 end
 
-function claude-watch --description "Watch CI for a PR and notify on completion"
-    argparse 't/triage' 'i/interval=' -- $argv
-    or return 1
-
-    if test (count $argv) -ne 1
-        echo "Usage: claude-watch [-t] [-i seconds] <PR#|ticket|worktree>"
-        return 1
-    end
-
-    set -l input $argv[1]
-    set -l repo_root (git_repo_root)
-    or return 1
-
-    set -l interval 300
-    set -ql _flag_i; and set interval $_flag_i
-
-    pushd $repo_root
-
-    # Resolve to PR number and branch
-    set -l pr_number
-    set -l branch
-    set -l wt_path
-
-    if string match -qr '^\d+$' -- $input
-        set pr_number $input
-    else
-        set wt_path (__claude_find_worktree $input)
-        if test -n "$wt_path"
-            set branch (__claude_wt_branch $wt_path)
-            set pr_number (gh pr list --head $branch --json number --jq '.[0].number' 2>/dev/null)
-        end
-    end
-
-    if test -z "$pr_number"
-        echo "Error: could not find a PR for '$input'"
-        popd
-        return 1
-    end
-
-    test -z "$branch"; and set branch (gh pr view $pr_number --json headRefName --jq '.headRefName' 2>/dev/null)
-
-    set -l slug (string replace -a '/' '-' -- $branch)
-    set -l logfile /tmp/ci-watch-$slug.log
-    set -l pidfile /tmp/ci-watch-$slug.pid
-
-    if test -f $pidfile; and kill -0 (cat $pidfile) 2>/dev/null
-        echo "Already watching PR #$pr_number (PID "(cat $pidfile)")"
-        popd
-        return 1
-    end
-
-    echo "Watching CI for PR #$pr_number ($branch) every "$interval"s"
-
-    set -l triage_cmd
-    if set -ql _flag_t; and test -n "$wt_path"
-        set triage_cmd claude --print --model sonnet --continue --cwd $wt_path \
-            "triage: CI has failed on PR #$pr_number. Check gh pr view $pr_number --json statusCheckRollup for details. Identify the root cause and suggest a fix."
-    end
-
-    $STRINGY_SCRIPTS_ROOT/watch-ci.fish $pr_number $branch $interval $pidfile $logfile $triage_cmd &
-
-    echo "PID: $last_pid"
-    echo "Log: $logfile"
-    echo "Monitor with: tail -f $logfile"
-
-    popd
-end
-
-function claude-watches --description "List active CI watchers"
-    set -l found 0
-    for pidfile in /tmp/ci-watch-*.pid
-        test -f $pidfile; or continue
-        set -l pid (cat $pidfile)
-        if kill -0 $pid 2>/dev/null
-            set found (math $found + 1)
-            set -l slug (string replace -r '.*/ci-watch-(.*)\.pid' '$1' -- $pidfile)
-            set -l logfile /tmp/ci-watch-$slug.log
-            set -l branch (head -1 $logfile 2>/dev/null | string replace 'Watching CI for ' '')
-            set -l started (sed -n '2p' $logfile 2>/dev/null | string replace 'Started: ' '')
-            set -l last_status (tail -1 $logfile 2>/dev/null)
-
-            printf "  PID %-8s %-40s (since %s)\n" $pid $branch "$started"
-            printf "               %s\n" "$last_status"
-        else
-            rm -f $pidfile
-        end
-    end
-    test $found -eq 0; and echo "No active watchers."
-end
-
-function claude-summary --description "Summarise work across all Claude worktrees for standup"
+function opencode-summary --description "Summarise work across all OpenCode worktrees for standup"
     argparse 's/since=' 'c/claude' -- $argv
     or return 1
 
@@ -670,10 +540,10 @@ function claude-summary --description "Summarise work across all Claude worktree
     set -ql _flag_s; and set since $_flag_s
 
     set -l main (git_main_branch)
-    set -l worktrees (__claude_worktrees $repo_root)
+    set -l worktrees (__opencode_worktrees $repo_root)
 
     if test (count $worktrees) -eq 0
-        echo "No Claude worktrees found."
+        echo "No OpenCode worktrees found."
         return 0
     end
 
@@ -684,8 +554,8 @@ function claude-summary --description "Summarise work across all Claude worktree
 
     for wt in $worktrees
         set -l name (basename $wt)
-        set -l branch (__claude_wt_branch $wt)
-        set -l ticket (__claude_wt_ticket $wt)
+        set -l branch (__opencode_wt_branch $wt)
+        set -l ticket (__opencode_wt_ticket $wt)
 
         set -l commits (git -C $wt log --since="$since" --oneline 2>/dev/null)
         set -l commit_count (count $commits)
@@ -722,22 +592,18 @@ function claude-summary --description "Summarise work across all Claude worktree
     end
 
     if set -ql _flag_c
-        printf '%s\n' $lines | claude --print "Summarise this worktree activity as a concise standup update. Use plain English, group by ticket, mention blockers or things needing review. Keep it to 3-5 bullet points."
+        printf '%s\n' $lines | opencode run "Summarise this worktree activity as a concise standup update. Use plain English, group by ticket, mention blockers or things needing review. Keep it to 3-5 bullet points."
     else
         printf '%s\n' $lines
     end
 end
 
-function claude-personal --description "Start Claude using personal Anthropic account (Sonnet)"
-    CLAUDE_CODE_USE_VERTEX=0 claude --model sonnet $argv
-end
-
-function claude-branch --description "Create or resume a Claude worktree session for an existing branch"
+function opencode-branch --description "Create or resume an OpenCode worktree session for an existing branch"
     argparse 'p/prompt=' -- $argv
     or return 1
 
     if test (count $argv) -ne 1
-        echo "Usage: claude-branch [-p prompt] <branch-name>"
+        echo "Usage: opencode-branch [-p prompt] <branch-name>"
         return 1
     end
 
@@ -749,28 +615,21 @@ function claude-branch --description "Create or resume a Claude worktree session
 
     set -l wt_name (string replace -a '/' '-' -- $branch)
 
-    set -l existing_wt (__claude_find_worktree $wt_name)
+    set -l existing_wt (__opencode_find_worktree $wt_name)
     if test -n "$existing_wt"
         tmux_title (basename $repo_root) (basename $existing_wt)
 
-        set -l session_id (__claude_active_session $existing_wt)
-        if test -n "$session_id"
-            echo "Attaching to active session $session_id in: "(basename $existing_wt)
-            claude attach $session_id
+        echo "Resuming session in: "(basename $existing_wt)
+        if set -ql _flag_p
+            opencode --continue --prompt "$_flag_p" $existing_wt
         else
-            echo "Resuming session in: "(basename $existing_wt)
-            cd $existing_wt
-            if set -ql _flag_p
-                claude --resume "$_flag_p"
-            else
-                claude --resume
-            end
+            opencode --continue $existing_wt
         end
         popd
         return
     end
 
-    set -l wt_path .claude/worktrees/$wt_name
+    set -l wt_path .opencode/worktrees/$wt_name
 
     tmux_title (basename $repo_root) $wt_name
 
@@ -786,38 +645,126 @@ function claude-branch --description "Create or resume a Claude worktree session
         return 1
     end
 
-    cd $wt_path
     if set -ql _flag_p
-        claude "$_flag_p"
+        opencode --prompt "$_flag_p" $wt_path
     else
-        claude
+        opencode $wt_path
     end
 
     popd
 end
 
-# Aliases
-alias cs=claude-switch
-alias cr=claude-resume
-alias cl=claude-list
-alias cx=claude-clean
-alias ct=claude-status
-alias cy=claude-sync
-alias cbg=claude-bg
-alias co=claude-dash
-alias cv=claude-review
-alias cw=claude-watch
-alias cws=claude-watches
-alias cm=claude-summary
-alias cb=claude-branch
+function opencode-watch --description "Watch CI for a PR and notify on completion"
+    argparse 't/triage' 'i/interval=' -- $argv
+    or return 1
 
-# Tab completions
-for cmd in claude-switch claude-review cs cv
+    if test (count $argv) -ne 1
+        echo "Usage: opencode-watch [-t] [-i seconds] <PR#|ticket|worktree>"
+        return 1
+    end
+
+    set -l input $argv[1]
+    set -l repo_root (git_repo_root)
+    or return 1
+
+    set -l interval 300
+    set -ql _flag_i; and set interval $_flag_i
+
+    pushd $repo_root
+
+    # Resolve to PR number and branch
+    set -l pr_number
+    set -l branch
+    set -l wt_path
+
+    if string match -qr '^\d+$' -- $input
+        set pr_number $input
+    else
+        set wt_path (__opencode_find_worktree $input)
+        if test -n "$wt_path"
+            set branch (__opencode_wt_branch $wt_path)
+            set pr_number (gh pr list --head $branch --json number --jq '.[0].number' 2>/dev/null)
+        end
+    end
+
+    if test -z "$pr_number"
+        echo "Error: could not find a PR for '$input'"
+        popd
+        return 1
+    end
+
+    test -z "$branch"; and set branch (gh pr view $pr_number --json headRefName --jq '.headRefName' 2>/dev/null)
+
+    set -l slug (string replace -a '/' '-' -- $branch)
+    set -l logfile /tmp/ci-watch-$slug.log
+    set -l pidfile /tmp/ci-watch-$slug.pid
+
+    if test -f $pidfile; and kill -0 (cat $pidfile) 2>/dev/null
+        echo "Already watching PR #$pr_number (PID "(cat $pidfile)")"
+        popd
+        return 1
+    end
+
+    echo "Watching CI for PR #$pr_number ($branch) every "$interval"s"
+
+    set -l triage_cmd
+    if set -ql _flag_t; and test -n "$wt_path"
+        set triage_cmd opencode run --continue --dir $wt_path \
+            "triage: CI has failed on PR #$pr_number. Check gh pr view $pr_number --json statusCheckRollup for details. Identify the root cause and suggest a fix."
+    end
+
+    $STRINGY_SCRIPTS_ROOT/watch-ci.fish $pr_number $branch $interval $pidfile $logfile $triage_cmd &
+
+    echo "PID: $last_pid"
+    echo "Log: $logfile"
+    echo "Monitor with: tail -f $logfile"
+
+    popd
+end
+
+function opencode-watches --description "List active CI watchers"
+    set -l found 0
+    for pidfile in /tmp/ci-watch-*.pid
+        test -f $pidfile; or continue
+        set -l pid (cat $pidfile)
+        if kill -0 $pid 2>/dev/null
+            set found (math $found + 1)
+            set -l slug (string replace -r '.*/ci-watch-(.*)\.pid' '$1' -- $pidfile)
+            set -l logfile /tmp/ci-watch-$slug.log
+            set -l branch (head -1 $logfile 2>/dev/null | string replace 'Watching CI for ' '')
+            set -l started (sed -n '2p' $logfile 2>/dev/null | string replace 'Started: ' '')
+            set -l last_status (tail -1 $logfile 2>/dev/null)
+
+            printf "  PID %-8s %-40s (since %s)\n" $pid $branch "$started"
+            printf "               %s\n" "$last_status"
+        else
+            rm -f $pidfile
+        end
+    end
+    test $found -eq 0; and echo "No active watchers."
+end
+
+# --- Aliases ---
+alias ocs=opencode-switch
+alias ocr=opencode-resume
+alias ocl=opencode-list
+alias ocx=opencode-clean
+alias ocy=opencode-sync
+alias ocbg=opencode-bg
+alias ocd=opencode-dash
+alias ocv=opencode-review
+alias ocm=opencode-summary
+alias ocb=opencode-branch
+alias ocw=opencode-watch
+alias ocws=opencode-watches
+
+# --- Tab completions ---
+for cmd in opencode-switch opencode-review ocs ocv
     complete -c $cmd -f -a '(__jira_completions)'
 end
-for cmd in claude-clean claude-resume claude-bg claude-watch cx cr cbg cw
-    complete -c $cmd -f -a '(__claude_worktree_completions)'
+for cmd in opencode-clean opencode-resume opencode-bg opencode-watch ocx ocr ocbg ocw
+    complete -c $cmd -f -a '(__opencode_worktree_completions)'
 end
-for cmd in claude-branch cb
+for cmd in opencode-branch ocb
     complete -c $cmd -f -a '(git branch --format "%(refname:short)" 2>/dev/null)'
 end

@@ -2,6 +2,10 @@
   "env": {
     "ENABLE_LSP_TOOL": "1"
   },
+  "attribution": {
+    "commit": ""
+  },
+  "model": "claude-opus-4-6",
   "hooks": {
     "PreToolUse": [
       {
@@ -27,7 +31,17 @@
   "effortLevel": "medium",
   "promptSuggestionEnabled": false,
   "theme": "light",
-  "attribution": {
-    "commit": ""
+  "mcpServers": {
+    "mcp-atlassian": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-atlassian"
+      ],
+      "env": {
+        "ATLASSIAN_INSTANCE_URL": "https://issues.redhat.com",
+        "ATLASSIAN_USERNAME": "ghutton@redhat.com",
+      }
+    }
   }
 }

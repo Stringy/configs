@@ -1,0 +1,64 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "anthropic/claude-opus-4-6",
+  "small_model": "anthropic/claude-haiku-4-5",
+  "instructions": [
+    "/home/ghutton/.claude/CLAUDE.md",
+    "/home/ghutton/.claude/RTK.md"
+  ],
+  "agent": {
+    "code-reviewer": {
+      "description": "Reviews code for best practices, security, and maintainability",
+      "model": "anthropic/claude-opus-4-6",
+      "permission": {
+        "edit": "deny",
+        "write": "deny"
+      }
+    },
+    "careful": {
+      "description": "Extra cautious mode for production changes - asks before modifications",
+      "permission": {
+        "bash": "ask",
+        "edit": "ask",
+        "write": "ask"
+      }
+    }
+  },
+  "command": {
+    "rtk": {
+      "description": "Token optimization wrapper",
+      "template": "Use rtk wrapper for token-optimized output: rtk $ARGUMENTS"
+    },
+    "gain": {
+      "description": "Show token savings analytics",
+      "template": "Run rtk gain to show token savings"
+    },
+    "postgres-dev": {
+      "description": "Run PostgreSQL integration tests",
+      "template": "Run postgres-dev for sql_integration tests"
+    },
+    "review": {
+      "description": "Review code changes",
+      "agent": "code-reviewer",
+      "template": "Review the current changes for code quality, security issues, and best practices"
+    }
+  },
+  "mcp": {
+    "mcp-atlassian": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-atlassian"],
+      "env": {
+        "ATLASSIAN_INSTANCE_URL": "https://issues.redhat.com",
+        "ATLASSIAN_USERNAME": "ghutton@redhat.com",
+        "ATLASSIAN_API_TOKEN": "{env:ATLASSIAN_API_TOKEN}"
+      },
+      "enabled": true
+    }
+  },
+  "lsp": {
+    "fish-lsp": {
+      "command": ["fish-lsp", "start"],
+      "extensions": [".fish"]
+    }
+  },
+}
