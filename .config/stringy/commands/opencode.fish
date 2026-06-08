@@ -744,6 +744,11 @@ function opencode-watches --description "List active CI watchers"
     test $found -eq 0; and echo "No active watchers."
 end
 
+function opencode-personal --description "Start OpenCode using personal Anthropic account (bypasses Vertex)"
+    GOOGLE_CLOUD_PROJECT= VERTEX_LOCATION= GOOGLE_APPLICATION_CREDENTIALS= \
+        opencode $argv
+end
+
 # --- Aliases ---
 alias ocs=opencode-switch
 alias ocr=opencode-resume

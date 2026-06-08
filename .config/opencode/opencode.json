@@ -61,4 +61,7 @@
       "extensions": [".fish"]
     }
   },
+  "plugin": [
+    "opencode-claude-auth@latest"
+  ]
 }
