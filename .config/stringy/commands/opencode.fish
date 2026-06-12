@@ -6,6 +6,8 @@ if at_work
     set -gx VERTEX_LOCATION $CLOUD_ML_REGION
     set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/application_default_credentials.json
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/work.json
+else
+    set -gx OPENCODE_CONFIG $HOME/.config/opencode/personal.json
 end
 
 alias ocode=opencode
