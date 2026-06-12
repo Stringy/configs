@@ -8,6 +8,9 @@
 [includeIf "gitdir:~/code/go/src/github.com/stringy/"]
 	path = ~/.config/stringy/git/personal
 
+[includeIf "gitdir:~/code/go/src/codeberg.org/"]
+	path = ~/.config/stringy/git/codeberg
+
 [core]
 	editor = nvim
 	pager = delta

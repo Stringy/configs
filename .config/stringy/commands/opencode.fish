@@ -5,6 +5,7 @@ if at_work
     set -gx GOOGLE_CLOUD_PROJECT $ANTHROPIC_VERTEX_PROJECT_ID
     set -gx VERTEX_LOCATION $CLOUD_ML_REGION
     set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/application_default_credentials.json
+    set -gx OPENCODE_CONFIG $HOME/.config/opencode/work.json
 end
 
 alias ocode=opencode
@@ -745,7 +746,7 @@ function opencode-watches --description "List active CI watchers"
 end
 
 function opencode-personal --description "Start OpenCode using personal Anthropic account (bypasses Vertex)"
-    GOOGLE_CLOUD_PROJECT= VERTEX_LOCATION= GOOGLE_APPLICATION_CREDENTIALS= \
+    GOOGLE_CLOUD_PROJECT= VERTEX_LOCATION= GOOGLE_APPLICATION_CREDENTIALS= OPENCODE_CONFIG= \
         opencode $argv
 end
 
