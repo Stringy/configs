@@ -44,13 +44,31 @@
     }
   },
   "mcp": {
-    "mcp-atlassian": {
+    "atlassian-sooperset": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-atlassian"],
-      "env": {
-        "ATLASSIAN_INSTANCE_URL": "https://issues.redhat.com",
-        "ATLASSIAN_USERNAME": "ghutton@redhat.com",
-        "ATLASSIAN_API_TOKEN": "{env:ATLASSIAN_API_TOKEN}"
+      "command": [
+        "podman", "run", "-i", "--rm",
+        "-e", "JIRA_URL",
+        "-e", "JIRA_USERNAME",
+        "-e", "JIRA_API_TOKEN",
+        "-e", "CONFLUENCE_URL",
+        "-e", "CONFLUENCE_USERNAME",
+        "-e", "CONFLUENCE_API_TOKEN",
+        "-e", "READ_ONLY_MODE",
+        "-e", "MCP_DISABLE_WAIT",
+        "-e", "TOOLSETS",
+        "ghcr.io/sooperset/mcp-atlassian:0.21.1"
+      ],
+      "environment": {
+        "JIRA_URL": "https://redhat.atlassian.net",
+        "JIRA_USERNAME": "ghutton@redhat.com",
+        "JIRA_API_TOKEN": "{env:JIRA_API_TOKEN}",
+        "CONFLUENCE_URL": "https://redhat.atlassian.net/wiki",
+        "CONFLUENCE_USERNAME": "ghutton@redhat.com",
+        "CONFLUENCE_API_TOKEN": "{env:JIRA_API_TOKEN}",
+        "READ_ONLY_MODE": "false",
+        "MCP_DISABLE_WAIT": "true",
+        "TOOLSETS": "all"
       },
       "enabled": true
     }
