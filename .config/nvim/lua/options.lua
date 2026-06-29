@@ -49,12 +49,20 @@ colorscheme gruvbox
 vim.api.nvim_create_augroup('setLineLength', { clear = true })
 vim.api.nvim_create_autocmd('FileType', {
     group = 'setLineLength',
-    pattern = { 'markdown', 'text' },
-    command = 'setlocal cc=0 textwidth=79 formatexpr='
+    pattern = { 'javascript' },
+    command = 'setlocal cc=0 shiftwidth=2 tabstop=2'
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-    group = 'setLineLength',
-    pattern = { 'javascript' },
-    command = 'setlocal cc=0 shiftwidth=2 tabstop=2'
+    pattern = 'markdown',
+    callback = function()
+        -- Enable pencil soft wrap
+        vim.cmd('call pencil#init()')
+        
+        -- Delay zen/twilight to ensure plugins are loaded
+        vim.defer_fn(function()
+            vim.cmd('ZenMode')
+            vim.cmd('Twilight')
+        end, 100)
+    end
 })

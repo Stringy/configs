@@ -32,6 +32,8 @@ nest.applyKeymaps {
 
         { 'nn', require('stringy.trimmers').newlines },
         { 't',  require('stringy.misc').toggle_theme },
+        { 'tw', ':Twilight<CR>' },
+        { 'w',  ':Wordy<CR>' },
 
         { 'ai', ':CodeCompanionActions<CR>' },
         { 'ac', ':CodeCompanionChat<CR>' },

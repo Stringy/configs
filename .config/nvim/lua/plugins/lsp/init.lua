@@ -122,11 +122,11 @@ return {
                     -- prose
                     null_ls.builtins.hover.dictionary,
                     null_ls.builtins.code_actions.proselint,
-                    null_ls.builtins.diagnostics.vale.with({
-                        filetypes = {
-                            'markdown', 'vimwiki', 'tex', 'asciidoc'
-                        }
-                    }),
+                    -- null_ls.builtins.diagnostics.vale.with({
+                    --     filetypes = {
+                    --         'markdown', 'vimwiki', 'tex', 'asciidoc'
+                    --     }
+                    -- }),
                 }
             }
         end

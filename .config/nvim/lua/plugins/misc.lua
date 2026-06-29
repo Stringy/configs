@@ -122,13 +122,52 @@ return {
         'folke/zen-mode.nvim',
         opts = {
             window = {
-                width = 89,
+                backdrop = 1,  -- no dimming, keep background same
+                width = 0.60,  -- 60% of screen width
+                height = 1,    -- full height
                 options = {
+                    signcolumn = "no",
                     number = false,
                     relativenumber = false,
+                    cursorline = false,
+                    list = false,  -- hide whitespace markers
                 },
             },
+            plugins = {
+                options = {
+                    enabled = true,
+                    ruler = false,
+                    showcmd = false,
+                    laststatus = 0,  -- hide statusline
+                },
+                twilight = { enabled = true },
+                gitsigns = { enabled = false },
+            },
         }
+    },
+
+    {
+        'folke/twilight.nvim',
+        opts = {
+            dimming = {
+                alpha = 0.25,  -- amount of dimming
+            },
+            context = 10,  -- lines of context around cursor
+        }
+    },
+
+    {
+        'preservim/vim-pencil',
+        ft = 'markdown',  -- only load for markdown
+        config = function()
+            vim.g['pencil#wrapModeDefault'] = 'soft'  -- soft wrap by default
+        end
+    },
+
+    {
+        'preservim/vim-wordy',
+        ft = 'markdown',
+        cmd = 'Wordy',
     },
 
     {
