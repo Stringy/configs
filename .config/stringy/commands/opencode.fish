@@ -6,8 +6,19 @@ if at_work
     set -gx VERTEX_LOCATION $CLOUD_ML_REGION
     set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/application_default_credentials.json
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/work.json
+    set -g __opencode_default_model google-vertex-anthropic/claude-opus-4-6
 else
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/personal.json
+    set -g __opencode_default_model anthropic/claude-sonnet-5
+end
+
+function opencode --wraps=opencode --description "OpenCode wrapper that enforces the correct model for work/personal context"
+    # If --model or -m is already specified, don't override
+    if contains -- --model $argv; or contains -- -m $argv
+        command opencode $argv
+    else
+        command opencode --model $__opencode_default_model $argv
+    end
 end
 
 alias ocode=opencode
@@ -749,7 +760,7 @@ end
 
 function opencode-personal --description "Start OpenCode using personal Anthropic account (bypasses Vertex)"
     GOOGLE_CLOUD_PROJECT= VERTEX_LOCATION= GOOGLE_APPLICATION_CREDENTIALS= OPENCODE_CONFIG= \
-        opencode $argv
+        command opencode --model anthropic/claude-sonnet-5 $argv
 end
 
 # --- Aliases ---

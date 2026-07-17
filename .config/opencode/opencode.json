@@ -2,17 +2,150 @@
   "$schema": "https://opencode.ai/config.json",
   "model": "anthropic/claude-opus-4-6",
   "small_model": "anthropic/claude-haiku-4-5",
+  "default_agent": "plan",
   "instructions": [
     "/home/ghutton/.claude/CLAUDE.md",
     "/home/ghutton/.claude/RTK.md"
   ],
+  "permission": {
+    "*": "ask",
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "lsp": "allow",
+    "todowrite": "allow",
+    "question": "allow",
+    "skill": "allow",
+    "bash": {
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git branch*": "allow",
+      "git remote*": "allow",
+      "git rev-parse*": "allow",
+      "git worktree list*": "allow",
+      "git add .*superpowers.*": "deny",
+      "ls *": "allow",
+      "cat *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "find *": "allow",
+      "fd *": "allow",
+      "rg *": "allow",
+      "wc *": "allow",
+      "tree *": "allow",
+      "sort *": "allow",
+      "jq *": "allow",
+      "rtk *": "allow",
+      "go test*": "allow",
+      "go vet*": "allow",
+      "which *": "allow",
+      "cargo check*": "allow",
+      "cargo clippy*": "allow",
+      "sudo *": "deny",
+      "chmod *": "deny",
+      "chown *": "deny",
+      "git push*": "deny",
+      "kubectl delete*": "deny",
+      "podman rm*": "deny",
+      "docker rm*": "deny",
+      "*": "ask"
+    },
+    "external_directory": {
+      "~/secrets/**": "deny",
+      "~/code/go/src/github.com/stackrox/**": "allow",
+      "~/code/go/src/github.com/stringy/**": "allow",
+      "*": "ask"
+    }
+  },
   "agent": {
-    "code-reviewer": {
-      "description": "Reviews code for best practices, security, and maintainability",
-      "model": "anthropic/claude-opus-4-6",
+    "build": {
+      "permission": {
+        "edit": "allow",
+        "task": "allow",
+        "bash": {
+          "git add*": "allow",
+          "git commit*": "allow",
+          "git stash*": "allow",
+          "git checkout*": "allow",
+          "git switch*": "allow",
+          "git rebase*": "allow",
+          "git merge*": "allow",
+          "git cherry-pick*": "allow",
+          "go build*": "allow",
+          "go generate*": "allow",
+          "go mod*": "allow",
+          "go install*": "allow",
+          "make *": "allow",
+          "mkdir *": "allow",
+          "cp *": "allow",
+          "mv *": "allow",
+          "touch *": "allow",
+          "cargo build*": "allow",
+          "cargo test*": "allow",
+          "cargo fmt*": "allow",
+          "cargo run*": "allow",
+          "cargo doc*": "allow",
+          "cargo install*": "ask"
+        }
+      }
+    },
+    "plan": {
+      "permission": {
+        "task": "allow"
+      }
+    },
+    "general": {
+      "permission": {
+        "edit": "allow",
+        "task": "allow",
+        "bash": {
+          "git add*": "allow",
+          "git commit*": "allow",
+          "git stash*": "allow",
+          "git checkout*": "allow",
+          "git switch*": "allow",
+          "git rebase*": "allow",
+          "git merge*": "allow",
+          "git cherry-pick*": "allow",
+          "go build*": "allow",
+          "go generate*": "allow",
+          "go mod*": "allow",
+          "go install*": "allow",
+          "make *": "allow",
+          "mkdir *": "allow",
+          "cp *": "allow",
+          "mv *": "allow",
+          "touch *": "allow",
+          "cargo build*": "allow",
+          "cargo test*": "allow",
+          "cargo fmt*": "allow",
+          "cargo run*": "allow",
+          "cargo doc*": "allow",
+          "cargo install*": "ask"
+        }
+      }
+    },
+    "explore": {
       "permission": {
         "edit": "deny",
-        "write": "deny"
+        "bash": "deny",
+        "task": "deny"
+      }
+    },
+    "rust-game-dev": {
+      "permission": {
+        "edit": "allow",
+        "task": "allow",
+        "bash": {
+          "cargo *": "allow",
+          "cargo install*": "ask",
+          "mkdir *": "allow",
+          "cp *": "allow",
+          "mv *": "allow",
+          "touch *": "allow"
+        }
       }
     },
     "careful": {
@@ -36,11 +169,6 @@
     "postgres-dev": {
       "description": "Run PostgreSQL integration tests",
       "template": "Run postgres-dev for sql_integration tests"
-    },
-    "review": {
-      "description": "Review code changes",
-      "agent": "code-reviewer",
-      "template": "Review the current changes for code quality, security issues, and best practices"
     }
   },
   "mcp": {
@@ -70,6 +198,11 @@
         "MCP_DISABLE_WAIT": "true",
         "TOOLSETS": "all"
       },
+      "enabled": true
+    },
+    "slack": {
+      "type": "local",
+      "command": ["/home/ghutton/.local/share/slack-mcp/run-slack-mcp.sh"],
       "enabled": true
     }
   },

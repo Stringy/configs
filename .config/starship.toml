@@ -1,0 +1,24 @@
+format = '$kubernetes$directory$git_branch$git_status$time$character'
+add_newline = false
+
+[kubernetes]
+disabled = false
+format = '[\($cluster\)]($style) '
+
+[git_status]
+format = '[$all_status$ahead_behind]($style) '
+
+[git_branch]
+format='[$branch]($style) '
+
+[character]
+success_symbol = '[>](bold green)'
+error_symbol = '[>](bold red)'
+
+[directory]
+truncation_length = 3
+
+[time]
+disabled = false
+format = '[$time]($style) '
+time_format = '%H:%M:%S'

@@ -1,3 +1,5 @@
+starship init fish | source
+
 
 set -gx STRINGY_SCRIPTS_ROOT $HOME/.config/stringy/scripts
 
