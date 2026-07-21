@@ -19,6 +19,7 @@
     "webfetch": "allow",
     "websearch": "allow",
     "bash": {
+      "*": "ask",
       "git status*": "allow",
       "git diff*": "allow",
       "git log*": "allow",
@@ -78,14 +79,13 @@
       "git push*": "deny",
       "kubectl delete*": "deny",
       "podman rm*": "deny",
-      "docker rm*": "deny",
-      "*": "ask"
+      "docker rm*": "deny"
     },
     "external_directory": {
+      "*": "ask",
       "~/secrets/**": "deny",
       "~/code/go/src/github.com/stackrox/**": "allow",
-      "~/code/go/src/github.com/stringy/**": "allow",
-      "*": "ask"
+      "~/code/go/src/github.com/stringy/**": "allow"
     }
   },
   "agent": {
