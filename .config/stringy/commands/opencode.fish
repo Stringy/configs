@@ -6,19 +6,8 @@ if at_work
     set -gx VERTEX_LOCATION $CLOUD_ML_REGION
     set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/application_default_credentials.json
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/work.json
-    set -g __opencode_default_model google-vertex-anthropic/claude-opus-4-6
 else
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/personal.json
-    set -g __opencode_default_model anthropic/claude-sonnet-5
-end
-
-function opencode --wraps=opencode --description "OpenCode wrapper that enforces the correct model for work/personal context"
-    # If --model or -m is already specified, don't override
-    if contains -- --model $argv; or contains -- -m $argv
-        command opencode $argv
-    else
-        command opencode --model $__opencode_default_model $argv
-    end
 end
 
 alias ocode=opencode
@@ -71,6 +60,20 @@ function __opencode_worktree_completions --description "List worktree names for 
     and for wt in (__opencode_worktrees $root)
         basename $wt
     end
+end
+
+function __opencode_db --description "Path to the OpenCode SQLite database"
+    echo (set -q XDG_DATA_HOME; and echo $XDG_DATA_HOME; or echo $HOME/.local/share)/opencode/opencode.db
+end
+
+function __opencode_session_completions --description "List recent sessions for tab completion"
+    set -l db (__opencode_db)
+    test -f $db; or return
+    sqlite3 $db "SELECT id || char(9) || title FROM session
+        WHERE directory = '$PWD'
+          AND parent_id IS NULL
+          AND (time_archived IS NULL OR time_archived = 0)
+        ORDER BY time_updated DESC LIMIT 20;" 2>/dev/null
 end
 
 # Jira helpers live in jira.fish (__jira_completions, __jira_fetch, __slugify, __cached)
@@ -612,6 +615,73 @@ function opencode-summary --description "Summarise work across all OpenCode work
     end
 end
 
+function opencode-daily-summary --description "Summarise a day's OpenCode sessions and append to the daily note"
+    argparse 'd/date=' 'n/no-ai' 'p/print' -- $argv
+    or return 1
+
+    if not command -q sqlite3
+        echo "Error: sqlite3 not found."
+        return 1
+    end
+
+    set -l db (__opencode_db)
+    if not test -f $db
+        echo "Error: OpenCode database not found at $db"
+        return 1
+    end
+
+    set -l day (date +%Y-%m-%d)
+    set -ql _flag_d; and set day $_flag_d
+
+    # One line per session: "- <title>  (<repo>, $<cost>)", ordered by cost.
+    # Skip placeholder-titled and zero-cost throwaway sessions.
+    set -l sessions (sqlite3 -readonly -separator \t $db "
+        SELECT title, directory, cost FROM session
+        WHERE date(time_updated/1000, 'unixepoch', 'localtime') = '$day'
+          AND title NOT LIKE 'New session%'
+          AND cost > 0
+        ORDER BY cost DESC;" 2>/dev/null)
+
+    if test (count $sessions) -eq 0
+        echo "No OpenCode sessions found for $day."
+        return 0
+    end
+
+    set -l lines
+    set -a lines "# OpenCode sessions — $day"
+    set -a lines ""
+
+    set -l total 0.0
+    for row in $sessions
+        set -l fields (string split \t -- $row)
+        set -l title $fields[1]
+        set -l dir (basename $fields[2])
+        set -l cost $fields[3]
+        set total (math $total + $cost)
+        set -a lines "- $title  ($dir, \$"(printf '%.2f' $cost)")"
+    end
+    set -a lines ""
+    set -a lines "Total: "(count $sessions)" session(s), \$"(printf '%.2f' $total)
+
+    if set -ql _flag_n
+        printf '%s\n' $lines
+        return 0
+    end
+
+    if not command -q opencode
+        echo "Error: opencode not found (use -n for a raw listing)."
+        return 1
+    end
+
+    set -l note_path $HOME/code/go/src/github.com/stringy/notes/$day.md
+
+    if set -ql _flag_p
+        printf '%s\n' $lines | opencode run "/daily-summary --stdout"
+    else
+        printf '%s\n' $lines | opencode run "/daily-summary $note_path"
+    end
+end
+
 function opencode-branch --description "Create or resume an OpenCode worktree session for an existing branch"
     argparse 'p/prompt=' -- $argv
     or return 1
@@ -773,6 +843,7 @@ alias ocbg=opencode-bg
 alias ocd=opencode-dash
 alias ocv=opencode-review
 alias ocm=opencode-summary
+alias ocds=opencode-daily-summary
 alias ocb=opencode-branch
 alias ocw=opencode-watch
 alias ocws=opencode-watches
@@ -787,3 +858,4 @@ end
 for cmd in opencode-branch ocb
     complete -c $cmd -f -a '(git branch --format "%(refname:short)" 2>/dev/null)'
 end
+complete -c opencode -l session -s s -x -a '(__opencode_session_completions)'
