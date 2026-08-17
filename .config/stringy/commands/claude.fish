@@ -2,7 +2,7 @@
 if at_work
     set -gx CLAUDE_CODE_USE_VERTEX 1
     set -gx CLOUD_ML_REGION global
-    set -gx ANTHROPIC_VERTEX_PROJECT_ID itpc-gcp-hcm-pe-eng-claude
+    set -gx ANTHROPIC_VERTEX_PROJECT_ID itpc-ca-85b48d479a
 end
 
 set -gx CLAUDE_CONTAINER_DIR ~/.config/stringy/containers/claude-code

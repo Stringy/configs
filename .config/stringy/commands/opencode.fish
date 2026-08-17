@@ -858,4 +858,4 @@ end
 for cmd in opencode-branch ocb
     complete -c $cmd -f -a '(git branch --format "%(refname:short)" 2>/dev/null)'
 end
-complete -c opencode -l session -s s -x -a '(__opencode_session_completions)'
+complete -k -c opencode -l session -s s -x -a '(__opencode_session_completions)'

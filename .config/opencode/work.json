@@ -1,4 +1,66 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "google-vertex-anthropic/claude-opus-4-6"
+  "model": "google-vertex-anthropic/claude-opus-4-6",
+  "small_model": "google-vertex-anthropic/claude-sonnet-4-5@20250929",
+  "provider": {
+    "google-vertex-anthropic": {
+      "whitelist": [
+        "claude-opus-4-8@default",
+        "claude-opus-4-6@default",
+        "claude-sonnet-5@default",
+        "claude-sonnet-4-6@default",
+        "claude-sonnet-4-5@20250929",
+        "claude-haiku-4-5@20251001"
+      ]
+    },
+    "google-vertex": {
+      "whitelist": [
+        "claude-opus-4-8@default",
+        "claude-opus-4-6@default",
+        "claude-sonnet-5@default",
+        "claude-sonnet-4-6@default",
+        "claude-sonnet-4-5@20250929",
+        "claude-haiku-4-5@20251001"
+      ]
+    }
+  },
+  "skills": {
+    "paths": ["/home/ghutton/code/go/src/github.com/stackrox/handbook/skills"]
+  },
+  "permission": {
+    "skill": {
+      "*": "allow",
+      "rit-*": "deny",
+      "creating-rit-handover": "deny"
+    }
+  },
+  "agent": {
+    "rit": {
+      "description": "RIT (Rotating Interrupt Team) assistant — triage, escalation, CVE, logging, handovers for the ACS handbook.",
+      "mode": "primary",
+      "prompt": "{file:./prompts/rit.md}",
+      "permission": {
+        "skill": {
+          "*": "deny",
+          "rit-*": "allow",
+          "creating-rit-handover": "allow"
+        },
+        "edit": "allow",
+        "task": "allow",
+        "bash": {
+          "jai get*": "allow",
+          "jai query*": "allow",
+          "jai search*": "allow",
+          "jai sync*": "allow",
+          "jai set*": "ask",
+          "jai create*": "ask",
+          "jai push*": "ask",
+          "slackers * get*": "allow",
+          "slackers *": "ask",
+          "gh pr create*": "ask",
+          "gh *": "allow"
+        }
+      }
+    }
+  }
 }
