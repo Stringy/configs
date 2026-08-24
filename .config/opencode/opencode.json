@@ -1,7 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "anthropic/claude-opus-4-6",
-  "small_model": "anthropic/claude-haiku-4-5",
   "default_agent": "plan",
   "instructions": [
     "/home/ghutton/.claude/CLAUDE.md",
@@ -86,13 +84,56 @@
       "~/secrets/**": "deny",
       "~/code/go/src/github.com/stackrox/**": "allow",
       "~/code/go/src/github.com/stringy/**": "allow"
-    }
+    },
+    "serena_get_current_config": "allow",
+    "serena_get_symbols_overview": "allow",
+    "serena_find_symbol": "allow",
+    "serena_find_referencing_symbols": "allow",
+    "serena_find_implementations": "allow",
+    "serena_find_declaration": "allow",
+    "serena_search_for_pattern": "allow",
+    "serena_find_file": "allow",
+    "serena_list_dir": "allow",
+    "serena_read_file": "allow",
+    "serena_read_memory": "allow",
+    "serena_list_memories": "allow",
+    "serena_get_diagnostics_for_file": "allow",
+    "serena_onboarding": "allow",
+    "serena_activate_project": "allow",
+    "serena_open_dashboard": "allow",
+    "serena_rename_memory": "allow",
+    "serena_replace_content": "ask",
+    "serena_replace_in_files": "ask",
+    "serena_replace_symbol_body": "ask",
+    "serena_insert_after_symbol": "ask",
+    "serena_insert_before_symbol": "ask",
+    "serena_rename_symbol": "ask",
+    "serena_safe_delete_symbol": "ask",
+    "serena_create_text_file": "ask",
+    "serena_write_memory": "ask",
+    "serena_edit_memory": "ask",
+    "serena_delete_memory": "ask",
+    "serena_execute_shell_command": "ask",
+    "headroom_headroom_compress": "allow",
+    "headroom_headroom_retrieve": "allow",
+    "headroom_headroom_stats": "allow",
+    "headroom_retrieve": "allow"
   },
   "agent": {
     "build": {
       "permission": {
         "edit": "allow",
         "task": "allow",
+        "serena_replace_content": "allow",
+        "serena_replace_in_files": "allow",
+        "serena_replace_symbol_body": "allow",
+        "serena_insert_after_symbol": "allow",
+        "serena_insert_before_symbol": "allow",
+        "serena_rename_symbol": "allow",
+        "serena_safe_delete_symbol": "allow",
+        "serena_create_text_file": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
         "bash": {
           "git add*": "allow",
           "git commit*": "allow",
@@ -129,6 +170,16 @@
       "permission": {
         "edit": "allow",
         "task": "allow",
+        "serena_replace_content": "allow",
+        "serena_replace_in_files": "allow",
+        "serena_replace_symbol_body": "allow",
+        "serena_insert_after_symbol": "allow",
+        "serena_insert_before_symbol": "allow",
+        "serena_rename_symbol": "allow",
+        "serena_safe_delete_symbol": "allow",
+        "serena_create_text_file": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
         "bash": {
           "git add*": "allow",
           "git commit*": "allow",
@@ -160,7 +211,18 @@
       "permission": {
         "edit": "deny",
         "bash": "deny",
-        "task": "deny"
+        "task": "deny",
+        "serena_replace_content": "deny",
+        "serena_replace_in_files": "deny",
+        "serena_replace_symbol_body": "deny",
+        "serena_insert_after_symbol": "deny",
+        "serena_insert_before_symbol": "deny",
+        "serena_rename_symbol": "deny",
+        "serena_safe_delete_symbol": "deny",
+        "serena_create_text_file": "deny",
+        "serena_write_memory": "deny",
+        "serena_edit_memory": "deny",
+        "serena_execute_shell_command": "deny"
       }
     },
     "rust-game-dev": {
@@ -183,6 +245,14 @@
         "bash": "ask",
         "edit": "ask",
         "write": "ask"
+      }
+    },
+    "design": {
+      "description": "Deep planning/design mode for complex architecture and detection-engine changes - read-only, uses Opus for maximum reasoning depth",
+      "mode": "primary",
+      "permission": {
+        "edit": "deny",
+        "task": "allow"
       }
     }
   },
@@ -240,6 +310,14 @@
       "command": ["fish-lsp", "start"],
       "extensions": [".fish"]
     }
+  },
+  "tool_output": {
+    "max_lines": 200,
+    "max_bytes": 8192
+  },
+  "compaction": {
+    "prune": true,
+    "tail_turns": 15
   },
   "plugin": [
     "opencode-claude-auth@latest"

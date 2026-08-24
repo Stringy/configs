@@ -12,6 +12,10 @@ end
 
 alias ocode=opencode
 
+function opencode --description "opencode, routed through Headroom for token savings"
+    command headroom wrap opencode $argv
+end
+
 # --- Internal helpers ---
 
 function __opencode_worktrees --description "List OpenCode worktree paths in the given repo root"
@@ -830,7 +834,7 @@ end
 
 function opencode-personal --description "Start OpenCode using personal Anthropic account (bypasses Vertex)"
     GOOGLE_CLOUD_PROJECT= VERTEX_LOCATION= GOOGLE_APPLICATION_CREDENTIALS= OPENCODE_CONFIG= \
-        command opencode --model anthropic/claude-sonnet-5 $argv
+        command headroom wrap opencode --backend anthropic -- --model anthropic/claude-sonnet-5 $argv
 end
 
 # --- Aliases ---
