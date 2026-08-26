@@ -45,10 +45,19 @@ function infra-new --description "Create a new infra cluster"
     infractl create openshift-4 --lifespan 8h
 end
 
+function infra-login --description "Login to an infra cluster"
+    set -l url "https://api.$argv[1].ocp.infra.rox.systems:6443"
+    set -l user kubeadmin
+    set -l pass (cat $INFRA_ROOT_DIR/$argv[1]/cluster-console-password)
+
+    oc login $url --username $user --password $pass
+end
+
 complete -x --command infra-dl --arguments "(infractl list -q | awk '{\$1=\$1;print}')"
 complete -x --command infra-clr --arguments "(infractl list -q | awk '{\$1=\$1;print}')"
 complete -x --command infra-clr --arguments "(complete_in_dir $INFRA_ROOT_DIR)"
 complete -x --command infra-switch --arguments "(infractl list -q | awk '{\$1=\$1;print}')"
+complete -x --command infra-login --arguments "(infractl list -q | awk '{\$1=\$1;print}')"
 
 function infra-local --description "Switch kubeconfig to local k3s cluster"
     set -l config /etc/rancher/k3s/k3s.yaml
@@ -67,3 +76,4 @@ alias infra="kubectl config get-clusters"
 alias ils="infractl list"
 alias inew=infra-new
 alias isl=infra-local
+alias ilog=infra-login

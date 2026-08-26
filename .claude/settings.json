@@ -40,7 +40,7 @@
       ],
       "env": {
         "ATLASSIAN_INSTANCE_URL": "https://issues.redhat.com",
-        "ATLASSIAN_USERNAME": "ghutton@redhat.com",
+        "ATLASSIAN_USERNAME": "ghutton@redhat.com"
       }
     }
   }

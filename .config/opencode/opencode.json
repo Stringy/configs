@@ -27,16 +27,6 @@
       "git rev-parse*": "allow",
       "git worktree list*": "allow",
       "git add .*superpowers.*": "deny",
-      "ls": "allow",
-      "ls *": "allow",
-      "cat": "allow",
-      "cat *": "allow",
-      "head": "allow",
-      "head *": "allow",
-      "tail": "allow",
-      "tail *": "allow",
-      "find": "allow",
-      "find *": "allow",
       "fd": "allow",
       "fd *": "allow",
       "rg": "allow",
@@ -304,6 +294,10 @@
       "command": ["/home/ghutton/.local/share/slack-mcp/run-slack-mcp.sh"],
       "enabled": true
     }
+  },
+  "tools": {
+    "atlassian-sooperset_*": false,
+    "slack_*": false
   },
   "lsp": {
     "fish-lsp": {

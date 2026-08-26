@@ -8,6 +8,10 @@ end
 set -gx CLAUDE_CONTAINER_DIR ~/.config/stringy/containers/claude-code
 set -gx CLAUDE_IMAGE_NAME claude-code
 
+function claude --description "claude, routed through Headroom for token savings"
+    command headroom wrap claude $argv
+end
+
 # --- Container helpers ---
 
 function claude-build --description "Build the Claude Code container image"

@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "google-vertex-anthropic/claude-opus-4-6",
+  "model": "google-vertex-anthropic/claude-sonnet-5@default",
   "small_model": "google-vertex-anthropic/claude-sonnet-4-5@20250929",
   "provider": {
     "google-vertex-anthropic": {
@@ -25,7 +25,9 @@
     }
   },
   "skills": {
-    "paths": ["/home/ghutton/code/go/src/github.com/stackrox/handbook/skills"]
+    "paths": [
+      "/home/ghutton/code/go/src/github.com/stackrox/handbook/skills"
+    ]
   },
   "permission": {
     "skill": {
@@ -35,32 +37,73 @@
     }
   },
   "agent": {
-    "rit": {
-      "description": "RIT (Rotating Interrupt Team) assistant — triage, escalation, CVE, logging, handovers for the ACS handbook.",
-      "mode": "primary",
-      "prompt": "{file:./prompts/rit.md}",
+    "plan": {
+      "model": "google-vertex-anthropic/claude-sonnet-5@default"
+    },
+    "build": {
+      "model": "google-vertex-anthropic/claude-sonnet-5@default"
+    },
+    "general": {
+      "model": "google-vertex-anthropic/claude-sonnet-5@default"
+    },
+    "explore": {
+      "model": "google-vertex-anthropic/claude-haiku-4-5@20251001"
+    },
+    "design": {
+      "model": "google-vertex-anthropic/claude-opus-4-8@default"
+    },
+    "jira": {
+      "description": "General-purpose admin agent for Jira, Confluence, and Slack: search/read/create/update tickets and pages, track work status, post or read Slack messages. Delegate here for any ticket/admin/comms task that isn't code.",
+      "mode": "all",
+      "model": "google-vertex-anthropic/claude-haiku-4-5@20251001",
+      "tools": {
+        "atlassian-sooperset_*": true,
+        "slack_*": true
+      },
       "permission": {
-        "skill": {
-          "*": "deny",
-          "rit-*": "allow",
-          "creating-rit-handover": "allow"
-        },
-        "edit": "allow",
-        "task": "allow",
-        "bash": {
-          "jai get*": "allow",
-          "jai query*": "allow",
-          "jai search*": "allow",
-          "jai sync*": "allow",
-          "jai set*": "ask",
-          "jai create*": "ask",
-          "jai push*": "ask",
-          "slackers * get*": "allow",
-          "slackers *": "ask",
-          "gh pr create*": "ask",
-          "gh *": "allow"
-        }
+        "atlassian-sooperset_confluence_search": "allow",
+        "atlassian-sooperset_confluence_get_page": "allow",
+        "atlassian-sooperset_confluence_get_page_children": "allow",
+        "atlassian-sooperset_confluence_get_comments": "allow",
+        "atlassian-sooperset_confluence_get_labels": "allow",
+        "atlassian-sooperset_jira_search": "allow",
+        "atlassian-sooperset_jira_get_issue": "allow",
+        "atlassian-sooperset_jira_get_all_projects": "allow",
+        "atlassian-sooperset_jira_get_transitions": "allow",
+        "atlassian-sooperset_jira_get_worklog": "allow",
+        "slack_get_channel_history": "allow",
+        "slack_search_messages": "allow",
+        "slack_get_thread": "allow",
+        "slack_get_channel_id_by_name": "allow",
+        "slack_whoami": "allow"
       }
+    }
+  },
+  "mcp": {
+    "headroom": {
+      "type": "local",
+      "command": [
+        "/home/ghutton/.local/bin/headroom",
+        "mcp",
+        "serve"
+      ],
+      "enabled": true
+    },
+    "serena": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "serena-agent",
+        "serena",
+        "start-mcp-server",
+        "--project-from-cwd",
+        "--context",
+        "agent",
+        "--open-web-dashboard",
+        "False"
+      ],
+      "enabled": true
     }
   }
 }
