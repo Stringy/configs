@@ -6,6 +6,7 @@ if at_work
     set -gx VERTEX_LOCATION $CLOUD_ML_REGION
     set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/application_default_credentials.json
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/work.json
+    set -gx OPENAI_API_KEY (cat $HOME/.config/secrets/openai)
 else
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/personal.json
 end
@@ -833,7 +834,7 @@ function opencode-watches --description "List active CI watchers"
 end
 
 function opencode-personal --description "Start OpenCode using personal Anthropic account (bypasses Vertex)"
-    GOOGLE_CLOUD_PROJECT= VERTEX_LOCATION= GOOGLE_APPLICATION_CREDENTIALS= OPENCODE_CONFIG= \
+    GOOGLE_CLOUD_PROJECT= VERTEX_LOCATION= GOOGLE_APPLICATION_CREDENTIALS= OPENCODE_CONFIG=$HOME/.config/opencode/personal.json \
         command headroom wrap opencode --backend anthropic -- --model anthropic/claude-sonnet-5 $argv
 end
 
@@ -862,4 +863,6 @@ end
 for cmd in opencode-branch ocb
     complete -c $cmd -f -a '(git branch --format "%(refname:short)" 2>/dev/null)'
 end
-complete -k -c opencode -l session -s s -x -a '(__opencode_session_completions)'
+for cmd in opencode opencode-personal
+    complete -k -c $cmd -l session -s s -x -a '(__opencode_session_completions)'
+end

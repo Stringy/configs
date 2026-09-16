@@ -19,13 +19,6 @@ function docker-push-ghutton --description "Retag and push an image to ghutton q
     docker push quay.io/ghutton/$name_and_tag
 end
 
-function docker-update-ssh-context --description "Update the address of an SSH-based context"
-    set -l address $argv[1]
-    set -l context $argv[2]
-
-    docker context update --docker host="ssh://$address" $context
-end
-
 alias docker-image-names="docker images --format '{{.Repository}}:{{.Tag}}'"
 
 complete -x -c docker-bash --arguments "(docker-image-names | grep -v '<none>')"
