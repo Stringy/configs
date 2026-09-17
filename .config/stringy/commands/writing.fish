@@ -41,7 +41,7 @@ function novel-new --description "Create a new novel project from template"
 
     echo ""
     echo "Created:"
-    echo "  $project_path/CLAUDE.md        — Claude editorial instructions"
+    echo "  $project_path/AGENTS.md         — AI editorial instructions"
     echo "  $project_path/bible.md         — world bible (fill this in)"
     echo "  $project_path/chapters/        — one file per chapter"
     echo "  $project_path/notes/           — characters, timeline, research"

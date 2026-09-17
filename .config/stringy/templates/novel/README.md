@@ -4,7 +4,7 @@
 
 ```
 project/
-  CLAUDE.md          — Claude editorial instructions
+  AGENTS.md          — AI editorial instructions
   bible.md           — world bible
   metadata.yaml      — author/contact details for manuscript submission
   Makefile           — build and utility targets
