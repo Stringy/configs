@@ -10,7 +10,7 @@ news.version=3.4.2
 
 # Color theme (uncomment one to use)
 #include light-16.theme
-#include light-256.theme
+include light-256.theme
 #include bubblegum-256.theme
 #include dark-16.theme
 #include dark-256.theme
