@@ -1,0 +1,1 @@
+/home/ghutton/code/go/src/github.com/stringy/proof-copilot/plugins/proof-copilot/skills/sourcebuild//SKILL.md
