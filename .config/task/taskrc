@@ -1,11 +1,10 @@
 # [Created by task 3.4.2 9/17/2026 09:41:41]
-data.location=/home/ghutton/code/go/src/github.com/stringy/notes/tasks
+data.location=~/.local/share/task
 news.version=3.4.2
 
 # To use the default location of the XDG directories,
 # move this configuration file from ~/.taskrc to ~/.config/task/taskrc and update location config as follows:
 
-#data.location=~/.local/share/task
 #hooks.location=~/.config/task/hooks
 
 # Color theme (uncomment one to use)
@@ -24,4 +23,18 @@ include light-256.theme
 #include solarized-dark-256.theme
 #include solarized-light-256.theme
 #include no-color.theme
+
+# Ticket granularity: feature > task/bug, linked via depends: (see stringy's
+# AGENTS.md files for the convention)
+uda.type.type=string
+uda.type.label=Type
+uda.type.values=feature,task,bug
+
+report.next.columns=id,start.age,entry.age,depends,priority,project,type,tags,recur,scheduled.countdown,due.relative,until.remaining,description,urgency
+report.next.labels=ID,Active,Age,Deps,P,Project,Type,Tag,Recur,S,Due,Until,Description,Urg
+
+report.list.columns=id,start.age,entry.age,depends.indicator,priority,project,type,tags,recur.indicator,scheduled.countdown,due,until.remaining,description.count,urgency
+report.list.labels=ID,Active,Age,D,P,Project,Type,Tags,R,Sch,Due,Until,Description,Urg
+
+context.stringtheory=project:personal.stringtheory
 

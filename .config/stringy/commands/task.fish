@@ -59,6 +59,10 @@ if command -q task
         task add project:personal.novel $argv
     end
 
+    function tstringtheory --description "Add a Stringtheory Taskwarrior task"
+        task add project:personal.stringtheory $argv
+    end
+
     complete -c t -w task
     complete -c tn -w task
     complete -c ta -w task
@@ -72,4 +76,5 @@ if command -q task
     complete -c tactive -w task
     complete -c twork -w task
     complete -c tpersonal -w task
+    complete -c tstringtheory -w task
 end
