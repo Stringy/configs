@@ -70,12 +70,17 @@ end
 function __opencode_db --description "Path to the OpenCode SQLite database"
     echo (set -q XDG_DATA_HOME; and echo $XDG_DATA_HOME; or echo $HOME/.local/share)/opencode/opencode.db
 end
-
 function __opencode_session_completions --description "List recent sessions for tab completion"
     set -l db (__opencode_db)
     test -f $db; or return
+
+    # OpenCode records each session's directory via getcwd(), which resolves
+    # symlinks (e.g. /home -> /var/home). Resolve $PWD the same way so the
+    # comparison actually matches.
+    set -l real_pwd (realpath $PWD)
+
     sqlite3 $db "SELECT id || char(9) || title FROM session
-        WHERE directory = '$PWD'
+        WHERE directory = '$real_pwd'
           AND parent_id IS NULL
           AND (time_archived IS NULL OR time_archived = 0)
         ORDER BY time_updated DESC LIMIT 20;" 2>/dev/null
