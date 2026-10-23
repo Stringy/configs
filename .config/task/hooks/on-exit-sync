@@ -1,13 +1,29 @@
 #!/bin/sh
-# on-exit hook: synchronously sync whenever Taskwarrior reports unsynced
-# local changes, so sync failures surface immediately in the terminal
-# rather than silently in the background.
+# on-exit hook: sync whenever Taskwarrior reports unsynced local changes,
+# debounced so bursts of task commands collapse into a single sync/commit
+# rather than one git commit per command. Still runs synchronously, so
+# sync failures surface immediately in the terminal rather than silently
+# in the background.
 
 cat >/dev/null  # drain stdin per the on-exit interface contract
 
 [ "$(task rc.hooks:0 _get tw.syncneeded 2>/dev/null)" = "1" ] || exit 0
 
+interval=$(task rc.hooks:0 _get rc.giles.sync.interval 2>/dev/null)
+case "$interval" in
+  ''|*[!0-9]*) interval=300 ;;
+esac
+
+stamp="$HOME/.cache/task-sync.last"
+now=$(date +%s)
+last=$(cat "$stamp" 2>/dev/null)
+case "$last" in
+  ''|*[!0-9]*) last=0 ;;
+esac
+
+[ $((now - last)) -ge "$interval" ] || exit 0
+
 (
   flock 9
-  task rc.hooks:0 sync
+  task rc.hooks:0 sync && date +%s >"$stamp"
 ) 9>"$HOME/.cache/task-sync.lock"

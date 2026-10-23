@@ -44,3 +44,4 @@ sync.git.remote=origin
 
 include taskrc.local
 hooks.location=$HOME\/.config\/task\/hooks
+giles.sync.interval=300
