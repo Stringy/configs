@@ -14,9 +14,9 @@ end
 
 alias ocode=opencode
 
-# function opencode --description "opencode, routed through Headroom for token savings"
-#     command headroom wrap opencode $argv
-# end
+function opencode --description "opencode, routed through Headroom for token savings"
+    command opencode $argv
+end
 
 # --- Internal helpers ---
 

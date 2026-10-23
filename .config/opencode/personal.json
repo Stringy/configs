@@ -23,7 +23,7 @@
     "headroom": {
       "type": "local",
       "command": [
-        "/home/ghutton/.local/bin/headroom",
+        "/home/giles/.local/bin/headroom",
         "mcp",
         "serve"
       ],

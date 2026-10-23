@@ -209,7 +209,13 @@
     },
     "plan": {
       "permission": {
-        "task": "allow"
+        "task": "allow",
+        "bash": {
+          "task add*": "allow",
+          "task *modify*": "allow",
+          "task *start*": "allow",
+          "task *done*": "allow"
+        }
       }
     },
     "general": {
