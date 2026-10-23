@@ -7,15 +7,16 @@ if at_work
     set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/application_default_credentials.json
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/work.json
     set -gx OPENAI_API_KEY (cat $HOME/.config/secrets/openai)
+    set -gx ENMAAS_KEY (cat $HOME/.config/secrets/enmaas)
 else
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/personal.json
 end
 
 alias ocode=opencode
 
-function opencode --description "opencode, routed through Headroom for token savings"
-    command headroom wrap opencode $argv
-end
+# function opencode --description "opencode, routed through Headroom for token savings"
+#     command headroom wrap opencode $argv
+# end
 
 # --- Internal helpers ---
 

@@ -43,4 +43,4 @@ sync.git.branch=main
 sync.git.remote=origin
 
 include taskrc.local
-hooks.location=\/home\/giles\/.config\/task\/hooks
+hooks.location=$HOME\/.config\/task\/hooks

@@ -3,10 +3,72 @@
   "model": "anthropic/claude-sonnet-5",
   "small_model": "anthropic/claude-haiku-4-5",
   "agent": {
-    "plan": { "model": "anthropic/claude-sonnet-5" },
-    "build": { "model": "anthropic/claude-sonnet-5" },
-    "general": { "model": "anthropic/claude-sonnet-5" },
-    "explore": { "model": "anthropic/claude-haiku-4-5" },
-    "design": { "model": "anthropic/claude-opus-4-8" }
+    "plan": {
+      "model": "anthropic/claude-sonnet-5"
+    },
+    "build": {
+      "model": "anthropic/claude-sonnet-5"
+    },
+    "general": {
+      "model": "anthropic/claude-sonnet-5"
+    },
+    "explore": {
+      "model": "anthropic/claude-haiku-4-5"
+    },
+    "design": {
+      "model": "anthropic/claude-opus-4-8"
+    }
+  },
+  "mcp": {
+    "headroom": {
+      "type": "local",
+      "command": [
+        "/home/ghutton/.local/bin/headroom",
+        "mcp",
+        "serve"
+      ],
+      "enabled": true
+    },
+    "serena": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "serena-agent",
+        "serena",
+        "start-mcp-server",
+        "--project-from-cwd",
+        "--context",
+        "agent",
+        "--open-web-dashboard",
+        "False"
+      ],
+      "enabled": true
+    }
+  },
+  "provider": {
+    "headroom": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Headroom Proxy",
+      "options": {
+        "baseURL": "http://127.0.0.1:8787/v1"
+      },
+      "models": {
+        "gpt-4o": {
+          "name": "GPT-4o",
+          "limit": {
+            "context": 128000,
+            "output": 16384
+          }
+        },
+        "gpt-4.1": {
+          "name": "GPT-4.1",
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          }
+        }
+      }
+    }
   }
 }
