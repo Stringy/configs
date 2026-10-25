@@ -63,18 +63,6 @@ if command -q task
         task add project:personal.stringtheory $argv
     end
 
-    # The on-exit-sync hook debounces syncs (see
-    # ~/.config/task/hooks/on-exit-sync) so rapid task edits batch into a
-    # single git commit instead of one per command. This safety net forces
-    # a final sync when the shell closes, so nothing sits unsynced across
-    # the debounce window.
-    function _task_sync_on_shell_exit --on-event fish_exit --description "Force a pending Taskwarrior sync on shell exit"
-        if command -q flock; and test (task rc.hooks:0 _get tw.syncneeded 2>/dev/null) = 1
-            flock $HOME/.cache/task-sync.lock task rc.hooks:0 sync
-            and date +%s >$HOME/.cache/task-sync.last
-        end
-    end
-
     complete -c t -w task
     complete -c tn -w task
     complete -c ta -w task
