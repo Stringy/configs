@@ -1,9 +1,13 @@
 #!/bin/sh
-# on-exit hook: synchronously sync whenever Taskwarrior reports unsynced
-# local changes, so sync failures surface immediately in the terminal
-# rather than silently in the background.
+# on-exit hook: only attempt a sync if this invocation actually added or
+# modified a task. Taskwarrior only feeds on-exit hooks JSON for changed
+# tasks (Hooks::onExit() -> tdb2.get_changes()), so read-only commands
+# like `list`/`show`/`diagnostics` get empty stdin here - skip those
+# instead of re-attempting a sync just because tw.syncneeded is still
+# set from an earlier command.
 
-cat >/dev/null  # drain stdin per the on-exit interface contract
+changes=$(cat)
+[ -n "$changes" ] || exit 0
 
 [ "$(task rc.hooks:0 _get tw.syncneeded 2>/dev/null)" = "1" ] || exit 0
 
