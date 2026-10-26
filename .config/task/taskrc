@@ -38,10 +38,9 @@ report.list.labels=ID,Active,Age,D,P,Project,Type,Tags,R,Sch,Due,Until,Descripti
 
 context.stringtheory=project:personal.stringtheory
 
-sync.git.local_path=\/home\/giles\/.tasks
+sync.git.local_path=$HOME\/.tasks
 sync.git.branch=main
 sync.git.remote=origin
 
 include taskrc.local
 hooks.location=$HOME\/.config\/task\/hooks
-context=stringtheory
