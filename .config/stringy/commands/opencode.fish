@@ -91,6 +91,98 @@ end
 
 # --- Main functions ---
 
+function opencode-auto --description "Start an auto-approved OpenCode session in a Nono sandbox"
+    argparse --strict-longopts '/detach' '/here' -- $argv
+    or begin
+        echo "Usage: opencode-auto [--here] [--detach] [-- <OpenCode arguments...>]"
+        return 1
+    end
+
+    if not command -q nono
+        echo "Error: nono is not installed"
+        return 127
+    end
+
+    if not set -q ENMAAS_KEY; or test -z "$ENMAAS_KEY"
+        echo "Error: EnMaaS credentials are unavailable; enable the work environment first"
+        return 1
+    end
+
+    set -l sandbox_root
+    if set -ql _flag_here
+        set sandbox_root (pwd -P)
+    else
+        set sandbox_root (command git rev-parse --show-toplevel 2>/dev/null)
+        or begin
+            echo "Error: opencode-auto must be run inside a Git worktree (or use --here)"
+            return 1
+        end
+    end
+
+    set sandbox_root (command realpath -- "$sandbox_root")
+    or return 1
+
+    set -l home_root (command realpath -- "$HOME")
+    or return 1
+
+    set -l home_relative (command realpath --relative-to="$sandbox_root" "$home_root")
+    or return 1
+
+    # Refuse HOME and any ancestor of HOME; the sandbox would otherwise expose
+    # more than the requested workspace.
+    if test "$home_relative" != ..; and not string match -q -- '../*' "$home_relative"
+        echo "Error: refusing a sandbox directory that contains your home directory"
+        return 1
+    end
+
+    pushd "$sandbox_root" >/dev/null
+    or return 1
+
+    command mkdir -p \
+        "$HOME/.cache/opencode-yolo/tmp" \
+        "$HOME/.local/share/opencode-yolo" \
+        "$HOME/.local/state/opencode-yolo"
+    or begin
+        echo "Error: could not prepare the isolated OpenCode runtime directories"
+        popd >/dev/null
+        return 1
+    end
+
+    set -l session_output (command nono run --detached --profile opencode-enmaas --allow-cwd -- opencode --auto $argv 2>&1)
+    set -l attach_line
+    for line in $session_output
+        if string match -qr '^Attach with: nono attach [^[:space:]]+' -- "$line"
+            set attach_line $line
+            break
+        end
+    end
+
+    if test -z "$attach_line"
+        for line in $session_output
+            echo "$line" >&2
+        end
+        echo "Error: Nono did not return a session ID to attach to" >&2
+        popd >/dev/null
+        return 1
+    end
+
+    set -l session_id (string replace -r '^Attach with: nono attach ' '' -- "$attach_line" | string trim)
+    for line in $session_output
+        echo "$line"
+    end
+
+    if set -ql _flag_detach
+        popd >/dev/null
+        return 0
+    end
+
+    command nono attach "$session_id"
+    set -l attach_status $status
+
+    popd >/dev/null
+    return $attach_status
+end
+
 function opencode-switch --description "Create or resume an OpenCode worktree session for a Jira ticket"
     argparse 'r/repo=' 'p/prompt=' -- $argv
     or return 1
@@ -872,3 +964,5 @@ end
 for cmd in opencode opencode-personal
     complete -k -c $cmd -l session -s s -x -a '(__opencode_session_completions)'
 end
+complete -c opencode-auto -l detach -d "Start without attaching to the session"
+complete -c opencode-auto -l here -d "Sandbox only the current directory instead of the Git worktree"

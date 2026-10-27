@@ -8,27 +8,9 @@
     },
     "build": {
       "model": "anthropic/claude-sonnet-5"
-    },
-    "general": {
-      "model": "anthropic/claude-sonnet-5"
-    },
-    "explore": {
-      "model": "anthropic/claude-haiku-4-5"
-    },
-    "design": {
-      "model": "anthropic/claude-opus-4-8"
     }
   },
   "mcp": {
-    "headroom": {
-      "type": "local",
-      "command": [
-        "/home/giles/.local/bin/headroom",
-        "mcp",
-        "serve"
-      ],
-      "enabled": true
-    },
     "serena": {
       "type": "local",
       "command": [
@@ -42,6 +24,15 @@
         "agent",
         "--open-web-dashboard",
         "False"
+      ],
+      "enabled": true
+    },
+    "headroom": {
+      "type": "local",
+      "command": [
+        "/home/ghutton/.local/bin/headroom",
+        "mcp",
+        "serve"
       ],
       "enabled": true
     }

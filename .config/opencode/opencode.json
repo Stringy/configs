@@ -160,6 +160,36 @@
     "serena_edit_memory": "ask",
     "serena_delete_memory": "ask",
     "serena_execute_shell_command": "ask",
+    "atlassian-sooperset_*": "deny",
+    "atlassian-sooperset_jira_get_user_profile": "allow",
+    "atlassian-sooperset_jira_get_issue_watchers": "allow",
+    "atlassian-sooperset_jira_get_issue": "allow",
+    "atlassian-sooperset_jira_search": "allow",
+    "atlassian-sooperset_jira_search_fields": "allow",
+    "atlassian-sooperset_jira_get_field_options": "allow",
+    "atlassian-sooperset_jira_get_project_issues": "allow",
+    "atlassian-sooperset_jira_get_transitions": "allow",
+    "atlassian-sooperset_jira_get_worklog": "allow",
+    "atlassian-sooperset_jira_download_attachments": "allow",
+    "atlassian-sooperset_jira_get_issue_images": "allow",
+    "atlassian-sooperset_jira_get_agile_boards": "allow",
+    "atlassian-sooperset_jira_get_board_issues": "allow",
+    "atlassian-sooperset_jira_get_sprints_from_board": "allow",
+    "atlassian-sooperset_jira_get_sprint_issues": "allow",
+    "atlassian-sooperset_jira_get_link_types": "allow",
+    "atlassian-sooperset_jira_batch_get_changelogs": "allow",
+    "atlassian-sooperset_jira_get_project_versions": "allow",
+    "atlassian-sooperset_jira_get_project_components": "allow",
+    "atlassian-sooperset_jira_get_all_projects": "allow",
+    "atlassian-sooperset_jira_get_service_desk_for_project": "allow",
+    "atlassian-sooperset_jira_get_service_desk_queues": "allow",
+    "atlassian-sooperset_jira_get_queue_issues": "allow",
+    "atlassian-sooperset_jira_get_issue_proforma_forms": "allow",
+    "atlassian-sooperset_jira_get_proforma_form_details": "allow",
+    "atlassian-sooperset_jira_get_issue_dates": "allow",
+    "atlassian-sooperset_jira_get_issue_sla": "allow",
+    "atlassian-sooperset_jira_get_issue_development_info": "allow",
+    "atlassian-sooperset_jira_get_issues_development_info": "allow",
     "headroom_headroom_compress": "allow",
     "headroom_headroom_retrieve": "allow",
     "headroom_headroom_stats": "allow",
@@ -167,6 +197,7 @@
   },
   "agent": {
     "build": {
+      "mode": "all",
       "permission": {
         "edit": "allow",
         "task": "allow",
@@ -214,98 +245,16 @@
           "task add*": "allow",
           "task *modify*": "allow",
           "task *start*": "allow",
-          "task *done*": "allow"
+          "task *done*": "allow",
+          "task *": "allow"
         }
       }
     },
     "general": {
-      "permission": {
-        "edit": "allow",
-        "task": "allow",
-        "serena_replace_content": "allow",
-        "serena_replace_in_files": "allow",
-        "serena_replace_symbol_body": "allow",
-        "serena_insert_after_symbol": "allow",
-        "serena_insert_before_symbol": "allow",
-        "serena_rename_symbol": "allow",
-        "serena_safe_delete_symbol": "allow",
-        "serena_create_text_file": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "bash": {
-          "git add*": "allow",
-          "git commit*": "allow",
-          "git stash*": "allow",
-          "git checkout*": "allow",
-          "git switch*": "allow",
-          "git rebase*": "allow",
-          "git merge*": "allow",
-          "git cherry-pick*": "allow",
-          "go build*": "allow",
-          "go generate*": "allow",
-          "go mod*": "allow",
-          "go install*": "allow",
-          "make *": "allow",
-          "mkdir *": "allow",
-          "cp *": "allow",
-          "mv *": "allow",
-          "touch *": "allow",
-          "cargo build*": "allow",
-          "cargo test*": "allow",
-          "cargo fmt*": "allow",
-          "cargo run*": "allow",
-          "cargo doc*": "allow",
-          "cargo install*": "ask"
-        }
-      }
+      "disable": true
     },
     "explore": {
-      "permission": {
-        "edit": "deny",
-        "bash": "deny",
-        "task": "deny",
-        "serena_replace_content": "deny",
-        "serena_replace_in_files": "deny",
-        "serena_replace_symbol_body": "deny",
-        "serena_insert_after_symbol": "deny",
-        "serena_insert_before_symbol": "deny",
-        "serena_rename_symbol": "deny",
-        "serena_safe_delete_symbol": "deny",
-        "serena_create_text_file": "deny",
-        "serena_write_memory": "deny",
-        "serena_edit_memory": "deny",
-        "serena_execute_shell_command": "deny"
-      }
-    },
-    "rust-game-dev": {
-      "permission": {
-        "edit": "allow",
-        "task": "allow",
-        "bash": {
-          "cargo *": "allow",
-          "cargo install*": "ask",
-          "mkdir *": "allow",
-          "cp *": "allow",
-          "mv *": "allow",
-          "touch *": "allow"
-        }
-      }
-    },
-    "careful": {
-      "description": "Extra cautious mode for production changes - asks before modifications",
-      "permission": {
-        "bash": "ask",
-        "edit": "ask",
-        "write": "ask"
-      }
-    },
-    "design": {
-      "description": "Deep planning/design mode for complex architecture and detection-engine changes - read-only, uses Opus for maximum reasoning depth",
-      "mode": "primary",
-      "permission": {
-        "edit": "deny",
-        "task": "allow"
-      }
+      "disable": true
     }
   },
   "command": {
@@ -330,9 +279,6 @@
         "-e", "JIRA_URL",
         "-e", "JIRA_USERNAME",
         "-e", "JIRA_API_TOKEN",
-        "-e", "CONFLUENCE_URL",
-        "-e", "CONFLUENCE_USERNAME",
-        "-e", "CONFLUENCE_API_TOKEN",
         "-e", "READ_ONLY_MODE",
         "-e", "MCP_DISABLE_WAIT",
         "-e", "TOOLSETS",
@@ -342,23 +288,20 @@
         "JIRA_URL": "https://redhat.atlassian.net",
         "JIRA_USERNAME": "ghutton@redhat.com",
         "JIRA_API_TOKEN": "{env:JIRA_API_TOKEN}",
-        "CONFLUENCE_URL": "https://redhat.atlassian.net/wiki",
-        "CONFLUENCE_USERNAME": "ghutton@redhat.com",
-        "CONFLUENCE_API_TOKEN": "{env:JIRA_API_TOKEN}",
-        "READ_ONLY_MODE": "false",
+        "READ_ONLY_MODE": "true",
         "MCP_DISABLE_WAIT": "true",
-        "TOOLSETS": "all"
+        "TOOLSETS": "jira_issues,jira_fields,jira_comments,jira_transitions,jira_projects,jira_agile,jira_links,jira_worklog,jira_attachments,jira_users,jira_watchers,jira_service_desk,jira_forms,jira_metrics,jira_development"
       },
       "enabled": true
     },
     "slack": {
       "type": "local",
       "command": ["/home/ghutton/.local/share/slack-mcp/run-slack-mcp.sh"],
-      "enabled": true
+      "enabled": false
     }
   },
   "tools": {
-    "atlassian-sooperset_*": false,
+    "atlassian-sooperset_*": true,
     "slack_*": false
   },
   "lsp": {

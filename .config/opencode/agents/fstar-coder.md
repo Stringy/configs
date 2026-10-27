@@ -1,1 +1,0 @@
-/home/ghutton/code/go/src/github.com/stringy/proof-copilot/plugins/proof-copilot/agents/fstar-coder.opencode.md

@@ -74,42 +74,6 @@
     },
     "build": {
       "model": "openai/gpt-5.6-terra"
-    },
-    "general": {
-      "model": "openai/gpt-5.6-terra"
-    },
-    "explore": {
-      "model": "openai/gpt-5.6-luna"
-    },
-    "design": {
-      "model": "openai/gpt-5.6-sol",
-      "description": "Deep planning/design mode for complex architecture and detection-engine changes - read-only, uses GPT-5.6 Sol for maximum reasoning depth"
-    },
-    "jira": {
-      "description": "General-purpose admin agent for Jira, Confluence, and Slack: search/read/create/update tickets and pages, track work status, post or read Slack messages. Delegate here for any ticket/admin/comms task that isn't code.",
-      "mode": "all",
-      "model": "openai/gpt-5.6-luna",
-      "tools": {
-        "atlassian-sooperset_*": true,
-        "slack_*": true
-      },
-      "permission": {
-        "atlassian-sooperset_confluence_search": "allow",
-        "atlassian-sooperset_confluence_get_page": "allow",
-        "atlassian-sooperset_confluence_get_page_children": "allow",
-        "atlassian-sooperset_confluence_get_comments": "allow",
-        "atlassian-sooperset_confluence_get_labels": "allow",
-        "atlassian-sooperset_jira_search": "allow",
-        "atlassian-sooperset_jira_get_issue": "allow",
-        "atlassian-sooperset_jira_get_all_projects": "allow",
-        "atlassian-sooperset_jira_get_transitions": "allow",
-        "atlassian-sooperset_jira_get_worklog": "allow",
-        "slack_get_channel_history": "allow",
-        "slack_search_messages": "allow",
-        "slack_get_thread": "allow",
-        "slack_get_channel_id_by_name": "allow",
-        "slack_whoami": "allow"
-      }
     }
   },
   "mcp": {

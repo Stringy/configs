@@ -15,6 +15,12 @@ permission:
   serena_write_memory: allow
   serena_edit_memory: allow
   bash:
+    "git add*": allow
+    "git commit*": allow
+    "git merge*": allow
+    "git reset*": allow
+    "git worktree *": allow
+    "task *": allow
     "go build*": allow
     "go generate*": allow
     "go mod*": allow
