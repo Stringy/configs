@@ -7,5 +7,6 @@ end
 
 # Only add keys if an agent is running
 if test -n "$SSH_AUTH_SOCK" -o -n "$SSH_AGENT_PID"
+    ssh-add-if-not-exists $HOME/.ssh/id_ed25519
     ssh-add-if-not-exists $HOME/.ssh/google_compute_engine
 end

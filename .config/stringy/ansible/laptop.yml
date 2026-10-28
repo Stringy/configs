@@ -9,9 +9,15 @@
 #   systemctl reboot
 #   ansible-galaxy collection install community.general
 #
-# Then run:
+# Then run, as yourself (NOT via `sudo ansible-playbook ...`):
 #
 #   ansible-playbook ~/.config/stringy/ansible/laptop.yml --ask-become-pass
+#
+# Only a few tasks need root (rpm-ostree layering, the fish default-shell
+# change, writing into /usr/local/bin) and escalate individually with
+# `become: true`. Running the whole playbook under sudo instead makes every
+# task run as root, which breaks installers like Homebrew's that refuse to
+# run as root on purpose.
 #
 # rpm-ostree package layering needs a reboot before the packages are usable.
 # If this play layers anything new, it stops after that step and asks you
@@ -26,6 +32,16 @@
     - vars/laptop.yml
 
   tasks:
+    - name: Refuse to run as root
+      ansible.builtin.assert:
+        that: ansible_facts.user_id != 'root'
+        fail_msg: >-
+          This playbook is running as root, which means it was invoked with
+          `sudo ansible-playbook ...` instead of plain
+          `ansible-playbook ... --ask-become-pass`. Re-run it as yourself —
+          the handful of tasks that need root (rpm-ostree, /usr/local/bin,
+          the default shell) escalate individually.
+
     - name: Layer system packages via rpm-ostree
       become: true
       community.general.rpm_ostree_pkg:
@@ -50,7 +66,7 @@
     - name: Set default shell to fish
       become: true
       ansible.builtin.user:
-        name: "{{ ansible_user_id }}"
+        name: "{{ ansible_facts.user_id }}"
         shell: /usr/bin/fish
       tags: [shell]
 
