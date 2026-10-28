@@ -1,0 +1,46 @@
+---
+# Package/app lists consumed by ansible/laptop.yml.
+#
+# Keep this file as the single place to add or remove software — task logic
+# in laptop.yml shouldn't need to change when the set of tools does.
+
+# Packages layered onto the rpm-ostree base image. Keep this list small:
+# every change here requires a reboot before it takes effect, and a long
+# list of layered packages slows down future `rpm-ostree upgrade` runs.
+# Prefer Homebrew/uv/cargo/native installers (below) for anything that
+# doesn't need to be a system package.
+rpm_ostree_packages:
+  - git
+  - git-delta
+  - git-filter-repo
+  - neovim
+  - pandoc
+  - rclone
+  - ripgrep
+  - sqlite3
+  - texlive-latex
+  - texlive-collection-fontsrecommended
+  - xsel
+  - xterm
+
+# Homebrew (linuxbrew) formulae for CLI tools that don't need to be layered.
+homebrew_formulae:
+  - pyenv
+  - task
+
+# Installed with `uv tool install`.
+uv_tools:
+  - headroom-ai
+
+# Flatpak apps, installed system-wide from Flathub (already configured on
+# Bazzite by default). This is a curated subset of daily-driver apps —
+# gaming/creative flatpaks are left to install manually via the app store.
+flatpak_apps:
+  - md.obsidian.Obsidian
+  - org.wezfurlong.wezterm
+  - io.typora.Typora
+  - org.libreoffice.LibreOffice
+  - org.mozilla.firefox
+
+dotfiles_repo: https://github.com/Stringy/configs
+dotfiles_dir: "{{ ansible_facts.env.HOME }}/.cfg"

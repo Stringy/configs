@@ -1,0 +1,186 @@
+---
+# Bootstraps a fresh Bazzite (or other rpm-ostree atomic desktop) install
+# with the personal/writing environment described by this repo: shell,
+# editor, dotfiles, and the handful of AI/CLI tools used day to day.
+#
+# One-time prerequisites on a brand-new install (ansible isn't there yet):
+#
+#   rpm-ostree install ansible
+#   systemctl reboot
+#   ansible-galaxy collection install community.general
+#
+# Then run:
+#
+#   ansible-playbook ~/.config/stringy/ansible/laptop.yml --ask-become-pass
+#
+# rpm-ostree package layering needs a reboot before the packages are usable.
+# If this play layers anything new, it stops after that step and asks you
+# to reboot and re-run — the second run is a no-op for that part and
+# continues on to everything else.
+
+- name: Set up a personal Bazzite laptop
+  hosts: localhost
+  connection: local
+
+  vars_files:
+    - vars/laptop.yml
+
+  tasks:
+    - name: Layer system packages via rpm-ostree
+      become: true
+      community.general.rpm_ostree_pkg:
+        name: "{{ rpm_ostree_packages }}"
+        state: present
+      register: rpm_ostree_result
+      tags: [packages]
+
+    - name: Stop here if packages were just layered
+      ansible.builtin.debug:
+        msg: >-
+          New packages were layered via rpm-ostree. Reboot now
+          (systemctl reboot), then re-run this playbook to continue.
+      when: rpm_ostree_result is defined and rpm_ostree_result.changed
+      tags: [packages]
+
+    - name: End the play until after the reboot
+      ansible.builtin.meta: end_play
+      when: rpm_ostree_result is defined and rpm_ostree_result.changed
+      tags: [packages]
+
+    - name: Set default shell to fish
+      become: true
+      ansible.builtin.user:
+        name: "{{ ansible_user_id }}"
+        shell: /usr/bin/fish
+      tags: [shell]
+
+    - name: Install Homebrew (linuxbrew)
+      ansible.builtin.shell:
+        cmd: >-
+          NONINTERACTIVE=1
+          curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+          | bash
+        creates: /home/linuxbrew/.linuxbrew/bin/brew
+      tags: [homebrew]
+
+    - name: Install Homebrew formulae
+      community.general.homebrew:
+        name: "{{ homebrew_formulae }}"
+        path: /home/linuxbrew/.linuxbrew/bin
+        state: present
+      tags: [homebrew]
+
+    - name: Install rustup (Rust toolchain)
+      ansible.builtin.shell:
+        cmd: >-
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs
+          | sh -s -- -y
+        creates: "{{ ansible_facts.env.HOME }}/.cargo/bin/rustc"
+      tags: [rust]
+
+    - name: Install Starship prompt
+      become: true
+      ansible.builtin.shell:
+        cmd: curl -sS https://starship.rs/install.sh | sh -s -- -y -b /usr/local/bin
+        creates: /usr/local/bin/starship
+      tags: [starship]
+
+    - name: Install uv (Python tool installer)
+      ansible.builtin.shell:
+        cmd: curl -LsSf https://astral.sh/uv/install.sh | sh
+        creates: "{{ ansible_facts.env.HOME }}/.local/bin/uv"
+      tags: [uv]
+
+    - name: Install uv-managed tools
+      ansible.builtin.command:
+        cmd: "{{ ansible_facts.env.HOME }}/.local/bin/uv tool install {{ item }}"
+      loop: "{{ uv_tools }}"
+      register: uv_tool_result
+      changed_when: "'already installed' not in uv_tool_result.stdout"
+      tags: [uv]
+
+    - name: Install OpenCode
+      ansible.builtin.shell:
+        cmd: curl -fsSL https://opencode.ai/install | bash
+        creates: "{{ ansible_facts.env.HOME }}/.opencode/bin/opencode"
+      tags: [ai-tools]
+
+    - name: Install Claude Code
+      ansible.builtin.shell:
+        cmd: curl -fsSL https://claude.ai/install.sh | bash
+        creates: "{{ ansible_facts.env.HOME }}/.local/bin/claude"
+      tags: [ai-tools]
+
+    - name: Clone dotfiles bare repository
+      ansible.builtin.git:
+        repo: "{{ dotfiles_repo }}"
+        dest: "{{ dotfiles_dir }}"
+        bare: true
+      register: dotfiles_clone
+      tags: [dotfiles]
+
+    - name: Ensure .cfg is ignored by the dotfiles work tree
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_facts.env.HOME }}/.gitignore"
+        line: .cfg
+        create: true
+      tags: [dotfiles]
+
+    - name: Checkout dotfiles into the home directory
+      ansible.builtin.command:
+        cmd: >-
+          git --git-dir={{ dotfiles_dir }}
+          --work-tree={{ ansible_facts.env.HOME }} checkout
+      register: dotfiles_checkout
+      when: dotfiles_clone.changed
+      # If this fails, it's almost certainly pre-existing files (.bashrc,
+      # .bash_profile, etc. ship on a fresh image) conflicting with files
+      # tracked by the dotfiles repo. Move or remove the reported paths
+      # and re-run rather than force-checking-out over them.
+      tags: [dotfiles]
+
+    - name: Hide untracked files in the dotfiles work tree
+      ansible.builtin.command:
+        cmd: >-
+          git --git-dir={{ dotfiles_dir }}
+          --work-tree={{ ansible_facts.env.HOME }}
+          config --local status.showUntrackedFiles no
+      changed_when: false
+      tags: [dotfiles]
+
+    - name: Check for fundle
+      ansible.builtin.stat:
+        path: "{{ ansible_facts.env.HOME }}/.config/fish/functions/fundle.fish"
+      register: fundle_installed
+      tags: [fish]
+
+    - name: Bootstrap fundle
+      ansible.builtin.shell:
+        cmd: fish -c "curl -sfL https://git.io/fundle-install | source"
+      when: not fundle_installed.stat.exists
+      tags: [fish]
+
+    - name: Install declared fish plugins
+      ansible.builtin.command:
+        cmd: fish -c "fundle install"
+      changed_when: true
+      tags: [fish]
+
+    - name: Check for a neovim config
+      ansible.builtin.stat:
+        path: "{{ ansible_facts.env.HOME }}/.config/nvim/init.lua"
+      register: nvim_init
+      tags: [nvim]
+
+    - name: Install neovim plugins via lazy.nvim
+      ansible.builtin.command:
+        cmd: nvim --headless "+Lazy! sync" +qa
+      when: nvim_init.stat.exists
+      changed_when: true
+      tags: [nvim]
+
+    - name: Install Flatpak apps
+      community.general.flatpak:
+        name: "{{ flatpak_apps }}"
+        state: present
+      tags: [flatpak]
