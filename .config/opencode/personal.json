@@ -8,6 +8,9 @@
     },
     "build": {
       "model": "anthropic/claude-sonnet-5"
+    },
+    "task-flow-worker": {
+      "model": "anthropic/claude-sonnet-5"
     }
   },
   "mcp": {

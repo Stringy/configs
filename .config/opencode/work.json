@@ -74,6 +74,9 @@
     },
     "build": {
       "model": "openai/gpt-5.6-terra"
+    },
+    "task-flow-worker": {
+      "model": "enmaas/rits/zai-org/glm-5-3"
     }
   },
   "mcp": {
