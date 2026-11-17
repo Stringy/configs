@@ -1,3 +1,4 @@
+set -gx SSH_AUTH_SOCK $HOME/.var/app/com.bitwarden.desktop/data/.bitwarden-ssh-agent.sock
 
 function ssh-add-if-not-exists --description "Add an SSH key if it does not exist in the SSH agent"
     test -f $argv[1]; or return
@@ -7,6 +8,6 @@ end
 
 # Only add keys if an agent is running
 if test -n "$SSH_AUTH_SOCK" -o -n "$SSH_AGENT_PID"
-    ssh-add-if-not-exists $HOME/.ssh/id_ed25519
-    ssh-add-if-not-exists $HOME/.ssh/google_compute_engine
+    # ssh-add-if-not-exists $HOME/.ssh/id_ed25519
+    # ssh-add-if-not-exists $HOME/.ssh/google_compute_engine
 end

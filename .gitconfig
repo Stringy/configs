@@ -34,3 +34,6 @@
 	insteadOf = https://github.com/
 [coderabbit]
 	machineId = cli/78998a8b63b24da4b19b381961b37021
+
+[gpg.ssh]
+    allowedSignersFile = ~/.ssh/allowed_signers

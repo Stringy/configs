@@ -308,6 +308,9 @@
     "fish-lsp": {
       "command": ["fish-lsp", "start"],
       "extensions": [".fish"]
+    },
+    "gopls": {
+      "disabled": true
     }
   },
   "tool_output": {

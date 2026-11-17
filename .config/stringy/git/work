@@ -1,7 +1,10 @@
 [user]
 	name = Giles Hutton
 	email = ghutton@redhat.com
-	signingkey = D0D460F9DE83B7BF
+	signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMjh6z1NK8kUlPL4fZexkT1hSehz8KfO3UsRAgnLzFja"
 
 [commit]
 	gpgSign = true
+
+[gpg]
+    format = ssh

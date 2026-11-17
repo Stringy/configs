@@ -6,8 +6,6 @@ if at_work
     set -gx VERTEX_LOCATION $CLOUD_ML_REGION
     set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/application_default_credentials.json
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/work.json
-    set -gx OPENAI_API_KEY (cat $HOME/.config/secrets/openai)
-    set -gx ENMAAS_KEY (cat $HOME/.config/secrets/enmaas)
 else
     set -gx OPENCODE_CONFIG $HOME/.config/opencode/personal.json
 end
@@ -15,7 +13,12 @@ end
 alias ocode=opencode
 
 function opencode --description "opencode, routed through Headroom for token savings"
-    command opencode $argv
+    if at_work
+        set -lx ENMAAS_KEY (bw get item 973ed291-0ac6-41f9-a034-b50500b554d1 | jq -r '.fields[] | select(.name == "Key") | .value')
+        command opencode $argv
+    else
+        command opencode $argv
+    end
 end
 
 # --- Internal helpers ---
