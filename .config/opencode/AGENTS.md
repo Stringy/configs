@@ -1,4 +1,4 @@
-# General Context for Claude
+# General Context
 
 ## Primary Work Context
 
@@ -98,6 +98,17 @@ When I ask you to investigate issues, I typically want you to:
 - Current: Using macroquad for rendering, specs for ECS
 - Tiles defined in `assets/tiles.yaml`
 
+## Knowledge Vault
+
+My distilled work and research knowledge lives in the Obsidian vault at
+`~/code/go/src/github.com/stringy/notes` — topic syntheses in `research/` and
+`component/`, indexed by `research/README.md` and `component/README.md`. Consult it
+whenever a question about my past work, prior research, or how a component works
+comes up, and before starting any research, design, or investigation work. Read the
+relevant index, search for terms, and read only the matching sections — never load
+whole files or the whole vault. After finishing a substantive session, offer to run
+`/distil` to capture durable knowledge into the vault.
+
 ## Workflow Preferences
 
 ### Session Management
@@ -155,7 +166,7 @@ When working on detection/policy features, reference these files:
 - **Conversation**: Use British English when speaking to me (e.g. "behaviour", "colour", "optimise", "analyse")
 - **Code and code-adjacent files** (comments, commit messages, documentation, skill files): Use American English, except in repositories under `~/code/go/src/github.com/stringy/` where British English is fine
 
-## Reminder for Claude
+## Reminder
 
 When helping me:
 - **Read files first** before proposing changes
@@ -184,5 +195,3 @@ strings, config values) where LSP doesn't help.
 
 After writing or editing code, check LSP diagnostics before
 moving on. Fix any type errors or missing imports immediately.
-
-@RTK.md

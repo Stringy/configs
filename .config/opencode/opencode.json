@@ -3,8 +3,7 @@
   "default_agent": "pair-programmer",
   "model": "openai/gpt-6-luna",
   "instructions": [
-    "/home/ghutton/.claude/CLAUDE.md",
-    "/home/ghutton/.claude/RTK.md"
+    "/home/ghutton/.config/opencode/RTK.md"
   ],
   "permission": {
     "*": "ask",
