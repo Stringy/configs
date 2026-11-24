@@ -3,8 +3,17 @@ alias infra-kconf="set -x KUBECONFIG $HOME/infra/kubeconfig"
 
 set -gx INFRA_ROOT_DIR "$HOME/infra"
 
-if test -e $HOME/.config/secrets/infractl
-    set -gx INFRA_TOKEN (cat $HOME/.config/secrets/infractl)
+function infractl --description "infractl with INFRA_TOKEN from Bitwarden"
+    if not command -q infractl
+        echo "infractl is not installed" >&2
+        return 127
+    end
+    set -lx INFRA_TOKEN (bwsecret INFRA_TOKEN)
+    if test -z "$INFRA_TOKEN"
+        return 1
+    end
+    # Launch inside this block: set -l is block-scoped, and INFRA_TOKEN must not outlive it
+    env -u BW_SESSION infractl $argv
 end
 
 function infra-dl --description "Download configuration for an infra cluster"
@@ -42,7 +51,7 @@ function infra-switch --description "Switch kubeconfig to a given cluster"
 end
 
 function infra-new --description "Create a new infra cluster"
-    infractl create openshift-4 --lifespan 8h
+    infractl create openshift-ipi --lifespan 8h
 end
 
 function infra-login --description "Login to an infra cluster"

@@ -2,10 +2,6 @@ set -gx STACKROX_ROOT $GOPATH/src/github.com/stackrox
 set -gx COLLECTOR_MODULES_BUCKET gs://collector-modules-osci
 set -gx COLLECTOR_SUPPORT_PKG_BUCKET gs://collector-support-public/offline/v1/support-packages
 
-if test -f $HOME/.infra
-    set -gx INFRA_TOKEN (string split '=' -- (cat $HOME/.infra))[2]
-end
-
 function cdrox --description "cd into a ROX directory"
     if test (count $argv) -gt 0
         cd $STACKROX_ROOT/$argv[1]

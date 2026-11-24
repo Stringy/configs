@@ -14,9 +14,8 @@ alias ocode=opencode
 
 function opencode --description "opencode, routed through Headroom for token savings"
     if at_work
-        set -lx ENMAAS_KEY (bw get item 973ed291-0ac6-41f9-a034-b50500b554d1 | jq -r '.fields[] | select(.name == "Key") | .value')
+        set -lx ENMAAS_KEY (bwsecret 973ed291-0ac6-41f9-a034-b50500b554d1)
         if test -z "$ENMAAS_KEY"
-            echo "Could not fetch the ENMAAS key; is the vault unlocked?" >&2
             return 1
         end
         # Launch inside this block: set -l is block-scoped, and ENMAAS_KEY must not outlive it
