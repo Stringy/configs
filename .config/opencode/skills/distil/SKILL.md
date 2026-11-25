@@ -93,10 +93,9 @@ everything at once.
 6. **Write the session note**: `sessions/YYYY-MM-DD-<slug>.md` — today's date
    for the current session, the session's own date for a past session. It is a
    *summary of what was discussed*, not where the findings live: a short
-   recap, the provenance (session title, date, ID for OpenCode sessions),
-   links to every topic page created or updated, and any open questions
-   raised but not yet absorbed elsewhere. The findings themselves belong in
-   the topic pages — do not duplicate them here.
+   recap, links to every topic page created or updated, and any open
+   questions raised but not yet absorbed elsewhere. The findings themselves
+   belong in the topic pages — do not duplicate them here.
 
 7. **Update the indexes**: add new topic pages to `topics/README.md` and the
    session note to `sessions/README.md`.
