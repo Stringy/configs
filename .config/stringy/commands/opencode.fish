@@ -783,7 +783,7 @@ function opencode-daily-summary --description "Summarise a day's OpenCode sessio
         return 1
     end
 
-    set -l note_path $HOME/code/go/src/github.com/stringy/notes/$day.md
+    set -l note_path $HOME/code/go/src/github.com/stringy/notes/sessions/$day.md
 
     if set -ql _flag_p
         printf '%s\n' $lines | opencode run "/daily-summary --stdout"

@@ -101,13 +101,14 @@ When I ask you to investigate issues, I typically want you to:
 ## Knowledge Vault
 
 My distilled work and research knowledge lives in the Obsidian vault at
-`~/code/go/src/github.com/stringy/notes` — topic syntheses in `research/` and
-`component/`, indexed by `research/README.md` and `component/README.md`. Consult it
-whenever a question about my past work, prior research, or how a component works
-comes up, and before starting any research, design, or investigation work. Read the
-relevant index, search for terms, and read only the matching sections — never load
-whole files or the whole vault. After finishing a substantive session, offer to run
-`/distil` to capture durable knowledge into the vault.
+`~/code/go/src/github.com/stringy/notes` — a wiki-style vault with topic pages in
+`topics/` (indexed by `topics/README.md`) and per-session summary notes in
+`sessions/`. Consult it whenever a question about my past work, prior research, or
+how a component works comes up, and before starting any research, design, or
+investigation work. Read the relevant index, search for terms, and read only the
+matching sections — never load whole files or the whole vault. After finishing a
+substantive session, offer to run `/distil` to capture durable knowledge into the
+vault.
 
 ## Workflow Preferences
 

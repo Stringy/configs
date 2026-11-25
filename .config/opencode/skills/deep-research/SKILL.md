@@ -1,25 +1,25 @@
 ---
 name: deep-research
-description: Use this skill when the user's prompt requires (1) researching a topic across multiple sources, comparing options or alternatives, analyzing trends or history, understanding markets or industries, or reviewing literature or studies and (2) synthesizing that research into a comprehensive, narrative report. If you're planning to search the web or internal knowledge bases, consider using this skill. This skill coordinates research subagents, so use it only when you have a tool for spawning subagents (the Agent or Task tool); otherwise, research the question directly.
+description: Use this skill when the user's prompt requires (1) researching a topic across multiple sources, comparing options or alternatives, analyzing trends or history, understanding markets or industries, or reviewing literature or studies and (2) synthesizing that research into the personal knowledge vault (~/code/go/src/github.com/stringy/notes). If you're planning to search the web or internal knowledge bases, consider using this skill. This skill coordinates research subagents, so use it only when you have a tool for spawning subagents (the Agent or Task tool); otherwise, research the question directly.
 ---
 
 # Coordinating Deep Research
 
 ## Your Role
 
-You are acting as the **coordinator**. Your job is to analyze the user's question, spawn subagents, and manage output files. In order to keep your context clean, you should never conduct research or write files directly. For the same reason, you also should not read the researcher.md or report-writer.md files.
+You are acting as the **coordinator**. Your job is to analyze the user's question, spawn subagents, and manage the distillation of their findings into the knowledge vault. In order to keep your context clean, you should never conduct research or write files directly. For the same reason, you also should not read the researcher.md or vault-writer.md files.
 
 As you work, if you have a to-do or task-list tool (for example TodoWrite, or TaskCreate and TaskUpdate), use it to keep the user informed of your plan and progress. For clarity, don't reference subagents in those items. For example, you might say "Conduct research" instead of "Spawn research subagents".
 
 ## Process
 
 1. [If necessary] Ask the user follow up questions
-2. Choose a title for this research and create its directories
+2. Choose a title for this research and create its scratch folder
 3. Decompose the user's query to determine subagent count
 4. Spawn research subagents (in parallel)
 5. [If absolutely necessary] Conduct one additional round of research
-6. Spawn report writer subagent
-7. Deliver report to user
+6. Spawn vault writer subagent
+7. Clean up scratch and deliver summary to user
 
 ### 1. [If necessary] Ask the user follow up questions
 
@@ -32,18 +32,13 @@ In order to avoid creating unnecessary friction with the user, follow ups should
 
 If you determine that you do need to ask follow up questions, do so with the AskUserQuestion tool.
 
-### 2. Choose a title for this research and create its directories
+### 2. Choose a title for this research and create its scratch folder
 
-First choose a title for this research. It names the folder that will hold this request's research notes and is also the filename of the report the user receives, where it is shown as the report's title, so make it a short, specific title for this research in the user's language and in sentence case: 3 to 6 words and under 50 characters (count them, and drop words rather than exceed either limit), using only letters, numbers and single spaces. Keep accented and non-Latin letters exactly as the user's language writes them (for example é, ñ, ü, 日本語) rather than converting them to plain ASCII, and use no hyphens, underscores, apostrophes or other punctuation. For example, a question about how the EU AI Act affects startups could use "EU AI Act startup obligations".
+First choose a title for this research. It names the scratch folder that will hold this request's research notes, so make it a short, specific title for this research in the user's language and in sentence case: 3 to 6 words and under 50 characters (count them, and drop words rather than exceed either limit), using only letters, numbers and single spaces. Keep accented and non-Latin letters exactly as the user's language writes them (for example é, ñ, ü, 日本語) rather than converting to plain ASCII, and use no hyphens, underscores, apostrophes or other punctuation. For example, a question about how the EU AI Act affects startups could use "EU AI Act startup obligations".
 
-This research's folders go in the same directory you used for research earlier in this conversation, or, if this is the first research request here, in your current working directory (not /tmp or an uploads folder). Before settling on the title, recall the titles of any research reports you have already delivered earlier in this conversation, and, if a research_notes/ folder already exists in that directory, list it — each folder inside it holds the notes behind a report of the same name in reports/, possibly from an earlier conversation. Then pick the case that fits:
-- New topic: choose a fresh title.
-- Returning to, extending or updating an earlier topic: choose a title that still names the topic and says what this request adds or changes (for example "EU AI Act startup penalties", not just "Penalties"), or, if nothing distinguishes it from the earlier request, the earlier title with the next number added, dropping a word first if that would exceed the limits above (for example "EU AI Act startup obligations 2"). Note the path of the most recent earlier report on that topic and of its notes folder: you will pass them to the report writer in step 6 as background to build on. If that report or its notes folder is no longer on disk, pass on only what remains and research whatever is missing.
-- The user asks for earlier research to be redone independently: choose a title as in the previous case, but do not pass the earlier material on.
+All research scratch lives in the knowledge vault: create the folder research_notes/{research title}/ under the vault root ~/code/go/src/github.com/stringy/notes. The vault's .gitignore already covers research_notes/, and the folder is deleted once the research is distilled (step 7), so it never becomes a durable artifact. Quote these paths in shell commands, since the title contains spaces, and note the vault root's absolute path — you will give the subagents absolute paths into this folder. If research_notes/ already contains folders, they are leftovers from interrupted runs: choose a title that differs from them, and never rename, move or write into another request's folder.
 
-In every case the title must differ from every report delivered earlier in this conversation and from every folder you see, so that this request's notes and report never mix with or replace an earlier one's. Never rename, move or write into an earlier request's folder.
-
-Then create the folders research_notes/{research title}/ and reports/ in that directory. Quote these paths in shell commands, since the title contains spaces, and note the directory's absolute path — you will give the subagents absolute paths into these folders, and they will store their files there.
+If this request returns to a topic researched earlier, the durable findings live in the vault's topic pages. Check topics/README.md (the topic map, ~45 lines) for the relevant page and note its path: you will pass it to the vault writer in step 6 as background to build on, and the writer will integrate the new findings into that page. Research whatever this request adds or needs re-checked. If the user asks for the earlier research to be redone independently, do not pass the earlier page on.
 
 ### 3. Decompose the user's query to determine subagent count
 
@@ -57,13 +52,13 @@ In order to effectively spawn and task subagents, determine if and how the user'
 | 5 | Multiple independent entities, regions, or domains | "AI regulation landscape" → (1) US federal, (2) EU/GDPR-AI Act, (3) China, (4) UK, (5) industry self-regulation |
 | 6+ | Large enumerable set requiring systematic coverage | "Electric vehicle adoption rates by US state" → researchers assigned to regional clusters |
 
-In the next step, you should spawn one subagent for each subtopic and independent point of view that you identified. When in doubt, 3 researchers is a reasonable default. If in step 2 you noted earlier research to build on, decompose only what this request adds or needs re-checked; the report writer will have the earlier material.
+In the next step, you should spawn one subagent for each subtopic and independent point of view that you identified. When in doubt, 3 researchers is a reasonable default. If in step 2 you noted earlier research to build on, decompose only what this request adds or needs re-checked; the vault writer will have the earlier material.
 
 ### 4. Spawn foreground research subagents (in parallel)
 
 For each subtopic and independent point of view determined above, spawn a foreground research subagent.
 
-To spawn research subagents, use the Agent tool (named Task in some versions) with subagent_type="general-purpose" and run_in_background=false. Ensure that you provide **extremely clear, specific** instructions to each research subagent. Be sure to propagate constraints of the original question to the research subagent (e.g., temporal, geographical). In the prompts below, replace {path_to_skill} with this skill's base directory (the directory this SKILL.md was loaded from), {absolute path of your working directory} with the path you noted in step 2, and {research title} with the title you chose in step 2. Follow the exact format provided below:
+To spawn research subagents, use the Agent tool (named Task in some versions) with subagent_type="general-purpose" and run_in_background=false. Ensure that you provide **extremely clear, specific** instructions to each research subagent. Be sure to propagate constraints of the original question to the research subagent (e.g., temporal, geographical). In the prompts below, replace {path_to_skill} with this skill's base directory (the directory this SKILL.md was loaded from), {vault root} with the vault root path noted in step 2, and {research title} with the title you chose in step 2. Follow the exact format provided below:
 
 ```
 Agent(
@@ -84,7 +79,7 @@ Suggested sources:
 Constraints:
 - {Any bounds from the initial user query, including temporal or geographic}
 
-Save your output notes to {absolute path of your working directory}/research_notes/{research title}/{topic}.md
+Save your output notes to {vault root}/research_notes/{research title}/{topic}.md
 
 **As a first step, you must read {path_to_skill}/references/researcher.md for instructions on how to conduct research.**"
 )
@@ -110,7 +105,7 @@ Example of a good, clear, detailed prompt for a research subagent:
 > Constraints:
 > - Must reflect current state as of 2026 with prior issues clearly noted as such
 >
-> Save your output notes to {absolute path of your working directory}/research_notes/Semiconductor supply chain outlook 2026/semiconductor_supply_chain.md
+> Save your output notes to {vault root}/research_notes/Semiconductor supply chain outlook 2026/semiconductor_supply_chain.md
 >
 > **As a first step, you must read {path_to_skill}/references/researcher.md for instructions on how to conduct research.**"
 
@@ -118,29 +113,32 @@ In order to ensure research is conducted as quickly as possible, it's essential 
 
 ### 5. [If absolutely necessary] Conduct one additional round of research
 
-Based on the task summaries returned by the research subagents, determine if there are any critical gaps that would make the report incomplete. If deemed absolutely necessary, spawn researchers in parallel to close those gaps. Spawning additional researchers in this step delays delivery of the report to the user, leading to a much worse experience, so this must be used with extreme care.
+Based on the task summaries returned by the research subagents, determine if there are any critical gaps that would make the findings incomplete. If deemed absolutely necessary, spawn researchers in parallel to close those gaps. Spawning additional researchers in this step delays delivery to the user, leading to a much worse experience, so this must be used with extreme care.
 
-**This step can only be followed once** - after the researchers finish, move immediately to Step 6, regardless of what results you get back. If you kick off any more research, you will hit timeouts or rate limits, meaning the user will never get an answer to their query. **To help yourself remember this, you should always output "After these researchers finish, I will move directly to coordinating the report writer" when choosing to kick off additional research.**
+**This step can only be followed once** - after the researchers finish, move immediately to Step 6, regardless of what results you get back. If you kick off any more research, you will hit timeouts or rate limits, meaning the user will never get an answer to their query. **To help yourself remember this, you should always output "After these researchers finish, I will move directly to coordinating the vault writer" when choosing to kick off additional research.**
 
-### 6. Spawn foreground report writer subagent
+### 6. Spawn foreground vault writer subagent
 
-After research is done, spawn a single report writer subagent. Use the Agent tool (named Task in some versions) with subagent_type="general-purpose" and run_in_background=false, and fill in the placeholders as in step 4. For {the user's original question}, state the question this report must answer in full — if this request returns to or extends earlier research, that is the earlier question as amended by this request (for example "How does the EU AI Act affect startups, including penalties?"), not just the follow-up message. On the line for earlier research, give the absolute paths of the earlier report and notes folder you noted in step 2, or write "none" if you noted nothing to build on or the user asked for an independent redo. Follow the exact format provided below:
+After research is done, spawn a single vault writer subagent. Use the Agent tool (named Task in some versions) with subagent_type="general-purpose" and run_in_background=false, and fill in the placeholders as in step 4. For {the user's original question}, state the question this research must answer in full — if this request returns to or extends earlier research, that is the earlier question as amended by this request (for example "How does the EU AI Act affect startups, including penalties?"), not just the follow-up message. For earlier vault pages, give the absolute path(s) of the topic page(s) you noted in step 2, or write "none" if you noted nothing to build on or the user asked for an independent redo. Follow the exact format provided below:
 
 ```
 Agent(
   run_in_background=false
   subagent_type="general-purpose",
-  description="Write final report",
-  prompt="Read the notes in {absolute path of your working directory}/research_notes/{research title}/ and synthesize into a research report that answers: {the user's original question}.
+  description="Distil research to vault",
+  prompt="Read the research notes in {vault root}/research_notes/{research title}/ and distil them into the knowledge vault, answering: {the user's original question}
 
-Earlier research in this conversation to build on: {absolute paths of the earlier report and notes folder from step 2, or "none"}
+Earlier vault pages to build on: {absolute path(s) of the topic page(s) from step 2, or "none"}
 
-Save your final report to this exact path: {absolute path of your working directory}/reports/{research title}.md
+Session date: {today's date}
 
-**As a first step, you must read {path_to_skill}/references/report-writer.md for instructions on how to write your research report.**"
+**As a first step, you must read {path_to_skill}/references/vault-writer.md for instructions on how to distil research into the vault.**"
 )
 ```
 
-### 7. Deliver report to user
+### 7. Clean up scratch and deliver summary to user
 
-After the report writer is done, make the report available to the user: if you have a tool for sending files to the user (for example SendUserFile), send reports/{research title}.md with it; otherwise, if your environment has a user-visible outputs folder, copy the report there under the same filename; otherwise leave it at reports/{research title}.md. Then read the finalized report and send the user a brief summary (aim for 3-5 sentences) that says where the full report is (sent to them, in the outputs folder, or its absolute path).
+After the vault writer is done:
+1. Delete the scratch folder: rm -rf "{vault root}/research_notes/{research title}" (quote the path in shell commands — the title contains spaces).
+2. Run git status --short and git diff --stat with the working directory set to the vault root, and show the result. Do not commit — the user reviews and commits.
+3. Send the user a brief summary (aim for 3-5 sentences) of the durable findings and the vault pages created or updated, with their absolute paths — the vault writer's final message contains both. If the vault writer found nothing durable, say so and summarize what was researched from its message.
